@@ -93,10 +93,6 @@
             transition: transform 0.3s ease;
         }
 
-        .card-modern:hover .flag-img {
-            transform: scale(1.1);
-        }
-
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
@@ -116,8 +112,6 @@
             transition: transform 0.2s, filter 0.2s;
         }
         
-        .btn-primary:active { transform: scale(0.95); }
-
         #map { background: #020617; width: 100%; height: 100%; }
 
         .map-overlay-info {
@@ -171,16 +165,14 @@
                 <div id="clock" class="hidden md:block text-xs font-mono bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 text-indigo-300">00:00:00</div>
             </header>
 
-            <!-- Contenuto principale -->
             <main class="flex-1 overflow-hidden relative">
                 
                 <!-- HOME VIEW -->
                 <div id="view-home" class="h-full flex flex-col items-center justify-center text-center p-6 fade-in-up">
-                    <span class="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-bold uppercase tracking-widest mb-4 border border-indigo-500/20">Auto-Zoom Attivo</span>
                     <h2 class="text-3xl md:text-5xl font-800 mb-4 bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
                         Il mondo a portata di tap.
                     </h2>
-                    <p class="text-slate-400 max-w-md mb-8 text-sm md:text-base">Esplora mappe dettagliate e confini senza dover regolare manualmente lo zoom.</p>
+                    <p class="text-slate-400 max-w-md mb-8 text-sm md:text-base">Mappe interattive, quiz survival con suoni e ricerca intelligente.</p>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl px-4">
                         <div onclick="showView('italia')" class="card-modern p-5 cursor-pointer group">
@@ -227,8 +219,8 @@
                     <div class="card-modern p-8 max-w-sm w-full">
                         <i class="fas fa-brain text-4xl text-amber-500 mb-4 block"></i>
                         <h2 class="text-xl font-800 mb-2 text-white">Geo Challenge</h2>
-                        <p class="text-slate-400 text-xs mb-6">Indovina la capitale. Più rispondi correttamente, più sali! Se sbagli, ricominci.</p>
-                        <div id="best-score-display" class="mb-6 bg-amber-500/10 py-2 rounded-lg border border-amber-500/20 text-amber-500 font-bold text-xs uppercase">Record: 0 Punti</div>
+                        <p class="text-slate-400 text-xs mb-6">Suoni integrati per risposte giuste ed errate! Indovina la capitale e mantieni la serie.</p>
+                        <div id="best-score-display" class="mb-6 bg-amber-500/10 py-2 rounded-lg border border-amber-500/20 text-amber-500 font-bold text-xs uppercase text-center">Record: 0 Punti</div>
                         <button onclick="startQuiz()" class="btn-primary w-full py-3 rounded-xl font-800 text-sm uppercase tracking-widest text-white">Inizia Survival Quiz</button>
                     </div>
                 </div>
@@ -236,14 +228,17 @@
                 <div id="view-quiz" class="hidden h-full flex flex-col items-center justify-center p-6">
                     <div class="max-w-md w-full fade-in-up">
                         <div class="flex justify-between items-center mb-4">
-                            <span id="q-progress" class="text-indigo-400 font-bold text-[10px] tracking-widest uppercase">MODALITÀ SURVIVAL</span>
-                            <span id="q-score" class="bg-white/5 px-3 py-1 rounded-full border border-white/10 text-xs font-bold text-white">0 PUNTI</span>
+                            <span id="q-progress" class="text-indigo-400 font-bold text-[10px] tracking-widest uppercase">AUDIO ATTIVO</span>
+                            <div class="flex gap-2">
+                                <span id="q-best" class="bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 text-[10px] font-bold text-amber-400">BEST: 0</span>
+                                <span id="q-score" class="bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20 text-[10px] font-bold text-indigo-400">SCORE: 0</span>
+                            </div>
                         </div>
                         <div class="card-modern p-6 text-center">
                             <img id="q-flag" src="" class="h-20 mx-auto rounded-lg shadow-xl mb-4 border border-white/10 object-cover aspect-video">
                             <h3 id="q-country" class="text-xl font-800 mb-6 text-white">-</h3>
                             <div id="q-options" class="grid grid-cols-1 gap-3"></div>
-                            <div id="quiz-msg" class="mt-4 text-xs font-bold italic opacity-0 transition-opacity">Messaggio</div>
+                            <div id="quiz-msg" class="mt-4 text-xs font-bold italic opacity-0 transition-opacity text-white">Messaggio</div>
                         </div>
                     </div>
                 </div>
@@ -260,38 +255,24 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <h3 id="m-name" class="text-lg font-800 leading-tight text-white">Località</h3>
-                        <a id="m-wiki-icon" href="#" target="_blank" class="text-slate-500 hover:text-indigo-400 transition-colors">
-                            <i class="fab fa-wikipedia-w text-sm"></i>
-                        </a>
+                        <a id="m-wiki-icon" href="#" target="_blank" class="text-slate-500 hover:text-indigo-400 transition-colors"><i class="fab fa-wikipedia-w text-sm"></i></a>
                     </div>
                     <p id="m-sub" class="text-[10px] text-slate-400 uppercase tracking-widest">Dettagli</p>
                 </div>
             </div>
-            <button onclick="closeMap()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20 text-white transition-all">
-                <i class="fas fa-times"></i>
-            </button>
+            <button onclick="closeMap()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20 text-white transition-all"><i class="fas fa-times"></i></button>
         </div>
 
         <div class="flex-1 relative">
             <div id="map"></div>
-            
             <div class="map-overlay-info">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
-                        <div class="text-center">
-                            <span id="m-temp" class="text-lg font-800 text-indigo-300 block">--°</span>
-                            <span class="text-[8px] text-slate-500 font-bold uppercase">Meteo</span>
-                        </div>
+                        <div class="text-center"><span id="m-temp" class="text-lg font-800 text-indigo-300 block">--°</span><span class="text-[8px] text-slate-500 font-bold uppercase">Meteo</span></div>
                         <div class="w-[1px] h-8 bg-white/10"></div>
-                        <div class="flex flex-col gap-0.5">
-                            <span id="m-pop" class="text-[10px] font-bold text-white">-</span>
-                            <span class="text-[8px] text-slate-500 font-bold uppercase">Abitanti</span>
-                        </div>
+                        <div class="flex flex-col gap-0.5"><span id="m-pop" class="text-[10px] font-bold text-white">-</span><span class="text-[8px] text-slate-500 font-bold uppercase">Abitanti</span></div>
                         <div class="w-[1px] h-8 bg-white/10"></div>
-                        <div class="flex flex-col gap-0.5">
-                            <span id="m-curr" class="text-[10px] font-bold text-white">-</span>
-                            <span class="text-[8px] text-slate-500 font-bold uppercase">Valuta</span>
-                        </div>
+                        <div class="flex flex-col gap-0.5"><span id="m-curr" class="text-[10px] font-bold text-white">-</span><span class="text-[8px] text-slate-500 font-bold uppercase">Valuta</span></div>
                     </div>
                     <div class="flex items-center gap-2">
                         <a id="m-wiki-btn" href="#" target="_blank" class="bg-white/5 hover:bg-white/10 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold border border-white/10 uppercase">Wikipedia</a>
@@ -305,214 +286,186 @@
     <script>
         let countries = [];
         let score = 0;
-        let bestScore = localStorage.getItem('alegeo_best') || 0;
+        let bestScore = parseInt(localStorage.getItem('alegeo_best')) || 0;
         let quizActive = false;
         let isAnswering = false;
         let map = null;
         let markers = L.layerGroup();
         let boundaries = null;
+        let currentCorrect = "";
+        let audioCtx = null;
+
+        // Web Audio Synthesizers
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playSound(type) {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } else {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(110, now);
+                osc.frequency.linearRampToValueAtTime(70, now + 0.3);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            }
+        }
 
         const regioniItalia = [
-            { name: "Abruzzo", capital: "L'Aquila", lat: 42.3512, lng: 13.3984, cities: [{n: "Pescara", l: 42.4618, g: 14.2142}, {n: "Chieti", l: 42.3510, g: 14.1673}, {n: "Teramo", l: 42.6587, g: 13.7043}] },
-            { name: "Basilicata", capital: "Potenza", lat: 40.6404, lng: 15.8047, cities: [{n: "Matera", l: 40.6664, g: 16.6043}] },
-            { name: "Calabria", capital: "Catanzaro", lat: 38.9098, lng: 16.5877, cities: [{n: "Reggio Calabria", l: 38.1144, g: 15.6500}, {n: "Cosenza", l: 39.2983, g: 16.2537}] },
-            { name: "Campania", capital: "Napoli", lat: 40.8518, lng: 14.2681, cities: [{n: "Salerno", l: 40.6779, g: 14.7659}, {n: "Caserta", l: 41.0734, g: 14.3323}, {n: "Benevento", l: 41.1298, g: 14.7827}] },
-            { name: "Emilia-Romagna", capital: "Bologna", lat: 44.4949, lng: 11.3426, cities: [{n: "Modena", l: 44.6471, g: 10.9252}, {n: "Parma", l: 44.8015, g: 10.3279}, {n: "Rimini", l: 44.0575, g: 12.5653}, {n: "Ravenna", l: 44.4184, g: 12.2035}] },
-            { name: "Friuli Venezia Giulia", capital: "Trieste", lat: 45.6495, lng: 13.7768, cities: [{n: "Udine", l: 46.0625, g: 13.2358}, {n: "Pordenone", l: 45.9568, g: 12.6605}] },
-            { name: "Lazio", capital: "Roma", lat: 41.8919, lng: 12.5113, cities: [{n: "Latina", l: 41.4676, g: 12.9037}, {n: "Viterbo", l: 42.4174, g: 12.1047}, {n: "Frosinone", l: 41.6397, g: 13.3413}] },
-            { name: "Liguria", capital: "Genova", lat: 44.4056, lng: 8.9463, cities: [{n: "La Spezia", l: 44.1025, g: 9.8241}, {n: "Savona", l: 44.3072, g: 8.4811}] },
-            { name: "Lombardia", capital: "Milano", lat: 45.4642, lng: 9.1900, cities: [{n: "Brescia", l: 45.5416, g: 10.2118}, {n: "Bergamo", l: 45.6983, g: 9.6773}, {n: "Monza", l: 45.5845, g: 9.2735}, {n: "Como", l: 45.8081, g: 9.0852}, {n: "Pavia", l: 45.1850, g: 9.1559}] },
-            { name: "Marche", capital: "Ancona", lat: 43.6158, lng: 13.5189, cities: [{n: "Pesaro", l: 43.9103, g: 12.9133}, {n: "Ascoli Piceno", l: 42.8540, g: 13.5755}] },
-            { name: "Molise", capital: "Campobasso", lat: 41.5603, lng: 14.6644, cities: [{n: "Isernia", l: 41.5954, g: 14.2343}] },
-            { name: "Piemonte", capital: "Torino", lat: 45.0703, lng: 7.6869, cities: [{n: "Novara", l: 45.4468, g: 8.6196}, {n: "Alessandria", l: 44.9129, g: 8.6154}, {n: "Cuneo", l: 44.3845, g: 7.5427}] },
-            { name: "Puglia", capital: "Bari", lat: 41.1171, lng: 16.8719, cities: [{n: "Lecce", l: 40.3515, g: 18.1750}, {n: "Taranto", l: 40.4677, g: 17.2470}, {n: "Foggia", l: 41.4622, g: 15.5446}] },
-            { name: "Sardegna", capital: "Cagliari", lat: 39.2238, lng: 9.1217, cities: [{n: "Sassari", l: 40.7259, g: 8.5556}, {n: "Olbia", l: 40.9214, g: 9.4948}] },
-            { name: "Sicilia", capital: "Palermo", lat: 38.1157, lng: 13.3615, cities: [{n: "Catania", l: 37.5079, g: 15.0830}, {n: "Messina", l: 38.1938, g: 15.5540}, {n: "Siracusa", l: 37.0755, g: 15.2866}, {n: "Agrigento", l: 37.3107, g: 13.5765}] },
-            { name: "Toscana", capital: "Firenze", lat: 43.7696, lng: 11.2558, cities: [{n: "Pisa", l: 43.7085, g: 10.4036}, {n: "Siena", l: 43.3182, g: 11.3306}, {n: "Livorno", l: 43.5485, g: 10.3106}] },
-            { name: "Trentino-Alto Adige", capital: "Trento", lat: 46.0679, lng: 11.1211, cities: [{n: "Bolzano", l: 46.4981, g: 11.3548}, {n: "Merano", l: 46.6703, g: 11.1593}] },
-            { name: "Umbria", capital: "Perugia", lat: 43.1107, lng: 12.3908, cities: [{n: "Terni", l: 42.5641, g: 12.6414}, {n: "Spoleto", l: 42.7340, g: 12.7368}] },
-            { name: "Valle d'Aosta", capital: "Aosta", lat: 45.7349, lng: 7.3201, cities: [{n: "Courmayeur", l: 45.7871, g: 6.9657}] },
-            { name: "Veneto", capital: "Venezia", lat: 45.4408, lng: 12.3155, cities: [{n: "Verona", l: 45.4384, g: 10.9916}, {n: "Padova", l: 45.4064, g: 11.8768}, {n: "Vicenza", l: 45.5455, g: 11.5475}, {n: "Treviso", l: 45.6669, g: 12.2431}] }
+            { name: "Abruzzo", capital: "L'Aquila", lat: 42.3512, lng: 13.3984 },
+            { name: "Basilicata", capital: "Potenza", lat: 40.6404, lng: 15.8047 },
+            { name: "Calabria", capital: "Catanzaro", lat: 38.9098, lng: 16.5877 },
+            { name: "Campania", capital: "Napoli", lat: 40.8518, lng: 14.2681 },
+            { name: "Emilia-Romagna", capital: "Bologna", lat: 44.4949, lng: 11.3426 },
+            { name: "Friuli Venezia Giulia", capital: "Trieste", lat: 45.6495, lng: 13.7768 },
+            { name: "Lazio", capital: "Roma", lat: 41.8919, lng: 12.5113 },
+            { name: "Liguria", capital: "Genova", lat: 44.4056, lng: 8.9463 },
+            { name: "Lombardia", capital: "Milano", lat: 45.4642, lng: 9.1900 },
+            { name: "Marche", capital: "Ancona", lat: 43.6158, lng: 13.5189 },
+            { name: "Molise", capital: "Campobasso", lat: 41.5603, lng: 14.6644 },
+            { name: "Piemonte", capital: "Torino", lat: 45.0703, lng: 7.6869 },
+            { name: "Puglia", capital: "Bari", lat: 41.1171, lng: 16.8719 },
+            { name: "Sardegna", capital: "Cagliari", lat: 39.2238, lng: 9.1217 },
+            { name: "Sicilia", capital: "Palermo", lat: 38.1157, lng: 13.3615 },
+            { name: "Toscana", capital: "Firenze", lat: 43.7696, lng: 11.2558 },
+            { name: "Trentino-Alto Adige", capital: "Trento", lat: 46.0679, lng: 11.1211 },
+            { name: "Umbria", capital: "Perugia", lat: 43.1107, lng: 12.3908 },
+            { name: "Valle d'Aosta", capital: "Aosta", lat: 45.7349, lng: 7.3201 },
+            { name: "Veneto", capital: "Venezia", lat: 45.4408, lng: 12.3155 }
         ];
 
         async function init() {
             try {
                 const res = await fetch('https://restcountries.com/v3.1/all?fields=name,capital,flags,latlng,translations,cca3,capitalInfo,population,currencies');
                 const data = await res.json();
-                countries = data.filter(c => c.capital && c.capital[0])
-                .map(c => {
-                    let currency = "N/A";
-                    if(c.currencies) currency = Object.values(c.currencies)[0].name;
-                    return {
-                        name: c.translations.ita?.common || c.name.common,
-                        capital: c.capital[0],
-                        flag: c.flags.svg,
-                        lat: c.latlng[0],
-                        lng: c.latlng[1],
-                        id: c.cca3,
-                        capLat: c.capitalInfo?.latlng?.[0] || c.latlng[0],
-                        capLng: c.capitalInfo?.latlng?.[1] || c.latlng[1],
-                        pop: c.population ? c.population.toLocaleString('it-IT') : "0",
-                        curr: currency
-                    };
-                }).sort((a,b) => a.name.localeCompare(b.name));
+                countries = data.filter(c => c.capital && c.capital[0]).map(c => ({
+                    name: c.translations.ita?.common || c.name.common,
+                    capital: c.capital[0],
+                    flag: c.flags.svg,
+                    lat: c.latlng[0],
+                    lng: c.latlng[1],
+                    id: c.cca3,
+                    capLat: c.capitalInfo?.latlng?.[0] || c.latlng[0],
+                    capLng: c.capitalInfo?.latlng?.[1] || c.latlng[1],
+                    pop: c.population ? c.population.toLocaleString('it-IT') : "0",
+                    curr: c.currencies ? Object.values(c.currencies)[0].name : "N/A"
+                })).sort((a,b) => a.name.localeCompare(b.name));
                 
                 renderItalia();
                 renderWorld();
                 startClock();
-                document.getElementById('best-score-display').innerText = `Record: ${bestScore} Punti`;
-            } catch (err) { console.error("Init Error", err); }
+                updateRecordDisplay();
+            } catch (err) { console.error(err); }
         }
 
         function showView(viewId) {
-            ['home', 'italia', 'atlante', 'quiz-menu', 'quiz'].forEach(id => {
-                const el = document.getElementById('view-' + id);
-                if(el) el.classList.add('hidden');
-            });
+            ['home', 'italia', 'atlante', 'quiz-menu', 'quiz'].forEach(id => document.getElementById('view-' + id)?.classList.add('hidden'));
             document.getElementById('view-' + viewId).classList.remove('hidden');
             if(viewId !== 'quiz') quizActive = false;
         }
 
-        function renderItalia() {
+        function renderItalia(f = "") {
             const list = document.getElementById('it-list');
-            list.innerHTML = regioniItalia.map(r => `
-                <div onclick="openMapItalia('${r.name}')" class="card-modern p-4 cursor-pointer flex justify-between items-center group">
-                    <div>
-                        <h4 class="font-bold text-white text-sm">${r.name}</h4>
-                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">${r.capital}</p>
-                    </div>
-                    <i class="fas fa-expand-arrows-alt text-[10px] text-slate-600 group-hover:text-emerald-400"></i>
+            list.innerHTML = regioniItalia.filter(r => r.name.toLowerCase().includes(f.toLowerCase())).map(r => `
+                <div onclick="openMapItalia('${r.name.replace(/'/g, "\\'")}')" class="card-modern p-4 cursor-pointer flex justify-between items-center">
+                    <div><h4 class="font-bold text-white text-sm">${r.name}</h4><p class="text-[9px] text-slate-500 font-bold uppercase">${r.capital}</p></div>
+                    <i class="fas fa-expand text-[10px] text-slate-600"></i>
                 </div>
             `).join('');
         }
 
-        function filterItalia() {
-            const t = document.getElementById('it-search').value.toLowerCase();
-            const filtered = regioniItalia.filter(r => r.name.toLowerCase().includes(t));
-            const list = document.getElementById('it-list');
-            list.innerHTML = filtered.map(r => `
-                <div onclick="openMapItalia('${r.name}')" class="card-modern p-4 cursor-pointer flex justify-between items-center">
-                    <div>
-                        <h4 class="font-bold text-white text-sm">${r.name}</h4>
-                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">${r.capital}</p>
-                    </div>
-                    <i class="fas fa-expand-arrows-alt text-[10px] text-slate-600"></i>
-                </div>
-            `).join('');
-        }
+        function filterItalia() { renderItalia(document.getElementById('it-search').value); }
 
-        function renderWorld() {
+        function renderWorld(f = "") {
             const grid = document.getElementById('world-grid');
-            grid.innerHTML = countries.map(c => `
+            grid.innerHTML = countries.filter(c => c.name.toLowerCase().includes(f.toLowerCase())).map(c => `
                 <div onclick="openMapWorld('${c.id}')" class="card-modern p-3 cursor-pointer text-center group">
-                    <div class="flag-container">
-                        <img src="${c.flag}" class="flag-img" loading="lazy">
-                    </div>
+                    <div class="flag-container"><img src="${c.flag}" class="flag-img" loading="lazy"></div>
                     <p class="text-[10px] font-bold text-slate-300 truncate">${c.name}</p>
                 </div>
             `).join('');
         }
 
-        function filterWorld() {
-            const t = document.getElementById('world-search').value.toLowerCase();
-            const filtered = countries.filter(c => c.name.toLowerCase().includes(t));
-            const grid = document.getElementById('world-grid');
-            grid.innerHTML = filtered.map(c => `
-                <div onclick="openMapWorld('${c.id}')" class="card-modern p-3 cursor-pointer text-center group">
-                    <div class="flag-container">
-                        <img src="${c.flag}" class="flag-img" loading="lazy">
-                    </div>
-                    <p class="text-[10px] font-bold text-slate-300 truncate">${c.name}</p>
-                </div>
-            `).join('');
-        }
-
-        function zoomToFeatures() {
-            if (boundaries && map) {
-                map.fitBounds(boundaries.getBounds(), { padding: [40, 40], animate: true });
-            }
-        }
-
-        async function openMapItalia(name) {
-            const r = regioniItalia.find(x => x.name === name);
-            const wikiUrl = `https://it.wikipedia.org/wiki/${encodeURIComponent(r.name)}`;
-            setupMapUI(r.name, `Capoluogo: ${r.capital}`, null, wikiUrl, "-", "Euro");
-            initLeaflet();
-            
-            markers.clearLayers();
-            L.marker([r.lat, r.lng], { icon: L.divIcon({className: 'marker-pin pin-capital'}) }).addTo(markers).bindPopup(`<b>${r.capital}</b>`);
-            r.cities.forEach(c => {
-                L.marker([c.l, c.g], { icon: L.divIcon({className: 'marker-pin pin-city'}) }).addTo(markers).bindPopup(`<b>${c.n}</b>`);
-            });
-
-            try {
-                const res = await fetch('https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_it_regions.json');
-                const data = await res.json();
-                const feat = data.features.find(f => f.properties.reg_name.toLowerCase().includes(r.name.toLowerCase()));
-                if (feat) {
-                    boundaries = L.geoJSON(feat, { 
-                        style: { color: '#10b981', weight: 3, fillOpacity: 0.1 } 
-                    }).addTo(map);
-                    zoomToFeatures();
-                } else { map.setView([r.lat, r.lng], 8); }
-            } catch(e) { map.setView([r.lat, r.lng], 8); }
-            
-            getWeather(r.lat, r.lng);
-        }
-
-        async function openMapWorld(id) {
-            const c = countries.find(x => x.id === id);
-            const wikiUrl = `https://it.wikipedia.org/wiki/${encodeURIComponent(c.name)}`;
-            setupMapUI(c.name, `Capitale: ${c.capital}`, c.flag, wikiUrl, c.pop, c.curr);
-            initLeaflet();
-            
-            markers.clearLayers();
-            L.marker([c.capLat, c.capLng], { icon: L.divIcon({className: 'marker-pin pin-capital'}) }).addTo(markers).bindPopup(`<b>${c.capital}</b>`);
-
-            try {
-                const res = await fetch(`https://raw.githubusercontent.com/johan/world.geo.json/master/countries/${c.id}.geo.json`);
-                if (res.ok) {
-                    const data = await res.json();
-                    boundaries = L.geoJSON(data, { 
-                        style: { color: '#6366f1', weight: 2, fillOpacity: 0.1 } 
-                    }).addTo(map);
-                    zoomToFeatures();
-                } else { map.setView([c.lat, c.lng], 5); }
-            } catch(e) { map.setView([c.lat, c.lng], 5); }
-
-            getWeather(c.capLat, c.capLng);
-        }
-
-        function setupMapUI(name, sub, flag, wiki, pop, curr) {
-            document.getElementById('map-modal').classList.remove('hidden');
-            document.getElementById('m-name').innerText = name;
-            document.getElementById('m-sub').innerText = sub;
-            document.getElementById('m-pop').innerText = pop;
-            document.getElementById('m-curr').innerText = curr;
-            document.getElementById('m-wiki-icon').href = wiki;
-            document.getElementById('m-wiki-btn').href = wiki;
-            
-            const flagImg = document.getElementById('m-flag');
-            if (flag) {
-                flagImg.src = flag;
-                flagImg.classList.remove('hidden');
-            } else {
-                flagImg.classList.add('hidden');
-            }
-        }
+        function filterWorld() { renderWorld(document.getElementById('world-search').value); }
 
         function initLeaflet() {
             if (!map) {
-                map = L.map('map', { zoomControl: false, attributionControl: false, tap: false });
-                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { opacity: 0.7 }).addTo(map);
+                const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
+                const lbl = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png');
+                const hybrid = L.layerGroup([sat, lbl]);
+                const light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png');
+                const dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png');
+
+                map = L.map('map', { layers: [hybrid], zoomControl: true, attributionControl: false });
+                L.control.layers({"Satellite": hybrid, "Chiara": light, "Scura": dark}).addTo(map);
                 markers.addTo(map);
             }
             if (boundaries) map.removeLayer(boundaries);
             setTimeout(() => map.invalidateSize(), 100);
         }
 
+        async function openMapItalia(name) {
+            const r = regioniItalia.find(x => x.name === name);
+            setupMapUI(r.name, `Capoluogo: ${r.capital}`, null, "-", "Euro");
+            initLeaflet();
+            markers.clearLayers();
+            L.marker([r.lat, r.lng], { icon: L.divIcon({className: 'marker-pin pin-capital'}) }).addTo(markers);
+            map.setView([r.lat, r.lng], 7);
+            getWeather(r.lat, r.lng);
+        }
+
+        async function openMapWorld(id) {
+            const c = countries.find(x => x.id === id);
+            setupMapUI(c.name, `Capitale: ${c.capital}`, c.flag, c.pop, c.curr);
+            initLeaflet();
+            markers.clearLayers();
+            L.marker([c.capLat, c.capLng], { icon: L.divIcon({className: 'marker-pin pin-capital'}) }).addTo(markers);
+            
+            try {
+                const res = await fetch(`https://raw.githubusercontent.com/johan/world.geo.json/master/countries/${c.id}.geo.json`);
+                if(res.ok) {
+                    boundaries = L.geoJSON(await res.json(), { style: { color: '#6366f1', weight: 2, fillOpacity: 0.1 } }).addTo(map);
+                    map.fitBounds(boundaries.getBounds());
+                } else { map.setView([c.lat, c.lng], 4); }
+            } catch(e) { map.setView([c.lat, c.lng], 4); }
+            getWeather(c.capLat, c.capLng);
+        }
+
+        function setupMapUI(n, s, f, p, curr) {
+            document.getElementById('map-modal').classList.remove('hidden');
+            document.getElementById('m-name').innerText = n;
+            document.getElementById('m-sub').innerText = s;
+            document.getElementById('m-pop').innerText = p;
+            document.getElementById('m-curr').innerText = curr;
+
+            // FIX: Link Wikipedia Corretti
+            const wikiUrl = `https://it.wikipedia.org/wiki/${encodeURIComponent(n)}`;
+            document.getElementById('m-wiki-icon').href = wikiUrl;
+            document.getElementById('m-wiki-btn').href = wikiUrl;
+
+            const flagImg = document.getElementById('m-flag');
+            if(f) { flagImg.src = f; flagImg.classList.remove('hidden'); } else { flagImg.classList.add('hidden'); }
+        }
+
         function closeMap() { document.getElementById('map-modal').classList.add('hidden'); }
+        function zoomToFeatures() { if (boundaries) map.fitBounds(boundaries.getBounds()); }
 
         async function getWeather(lat, lng) {
             try {
@@ -522,17 +475,17 @@
             } catch(e) { document.getElementById('m-temp').innerText = "--°"; }
         }
 
-        function startClock() {
-            setInterval(() => {
-                const now = new Date();
-                document.getElementById('clock').innerText = now.toLocaleTimeString('it-IT');
-            }, 1000);
+        function startClock() { setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT'); }, 1000); }
+        function updateRecordDisplay() { 
+            document.getElementById('best-score-display').innerText = `Record: ${bestScore} Punti`;
+            document.getElementById('q-best').innerText = `BEST: ${bestScore}`;
         }
 
-        // QUIZ SURVIVAL
+        // QUIZ
         function startQuiz() {
             score = 0; quizActive = true; showView('quiz');
-            document.getElementById('q-score').innerText = `0 PUNTI`;
+            document.getElementById('q-score').innerText = `SCORE: 0`;
+            updateRecordDisplay();
             generateQuestion();
         }
 
@@ -540,7 +493,6 @@
             if (!quizActive) return;
             isAnswering = false;
             document.getElementById('quiz-msg').style.opacity = "0";
-            
             const c = countries[Math.floor(Math.random() * countries.length)];
             currentCorrect = c.capital;
             document.getElementById('q-flag').src = c.flag;
@@ -553,9 +505,8 @@
             }
             opts.sort(() => Math.random() - 0.5);
 
-            const container = document.getElementById('q-options');
-            container.innerHTML = opts.map(o => `
-                <button onclick="checkAnswer(this, '${o}')" class="bg-white/5 border border-white/10 p-3 rounded-lg font-bold text-sm hover:bg-white/10 transition-all text-white">${o}</button>
+            document.getElementById('q-options').innerHTML = opts.map(o => `
+                <button onclick="checkAnswer(this, '${o.replace(/'/g, "\\'")}')" class="quiz-option bg-white/5 border border-white/10 p-3 rounded-lg font-bold text-sm hover:bg-white/10 transition-all text-white">${o}</button>
             `).join('');
         }
 
@@ -563,27 +514,33 @@
             if (isAnswering) return;
             isAnswering = true;
             const msg = document.getElementById('quiz-msg');
+            const options = document.querySelectorAll('.quiz-option');
             
             if (val === currentCorrect) {
+                playSound('correct');
                 btn.classList.add('!bg-emerald-500/20', '!border-emerald-500', 'text-emerald-400');
                 score += 10;
                 if (score > bestScore) {
                     bestScore = score;
                     localStorage.setItem('alegeo_best', bestScore);
-                    document.getElementById('best-score-display').innerText = `Record: ${bestScore} Punti`;
+                    updateRecordDisplay();
                 }
                 msg.innerText = "Corretto!";
                 msg.className = "mt-4 text-xs font-bold italic text-emerald-400";
             } else {
+                playSound('wrong');
                 btn.classList.add('!bg-red-500/20', '!border-red-500', 'text-red-400');
-                msg.innerText = `Sbagliato! Era ${currentCorrect}. Reset!`;
+                options.forEach(opt => {
+                    if (opt.innerText === currentCorrect) opt.classList.add('!bg-emerald-500/20', '!border-emerald-500', 'text-emerald-400');
+                });
+                msg.innerText = `Sbagliato! Era ${currentCorrect}.`;
                 msg.className = "mt-4 text-xs font-bold italic text-red-400";
                 score = 0;
             }
             
             msg.style.opacity = "1";
-            document.getElementById('q-score').innerText = `${score} PUNTI`;
-            setTimeout(() => { if(quizActive) generateQuestion(); }, 1500);
+            document.getElementById('q-score').innerText = `SCORE: ${score}`;
+            setTimeout(() => { if(quizActive) generateQuestion(); }, (val === currentCorrect ? 1200 : 2500));
         }
 
         window.onload = init;
