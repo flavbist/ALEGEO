@@ -1,551 +1,592 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
- <title>ALEGEO - Esplora l'Eccellenza</title>
- <script src="https://cdn.tailwindcss.com"></script>
- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALEGEO - Esplora l'Eccellenza</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
- <style>
- @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
- 
- :root {
- --primary: #6366f1;
- --secondary: #a855f7;
- --accent: #10b981;
- --bg-dark: #0f172a;
- }
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --accent: #10b981;
+            --bg-dark: #0f172a;
+        }
 
- body {
- font-family: 'Plus Jakarta Sans', sans-serif;
- background-color: var(--bg-dark);
- color: #f8fafc;
- margin: 0;
- padding: 0;
- min-height: 100vh;
- display: flex;
- flex-direction: column;
- overflow-x: hidden;
- }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
 
- .bg-animate {
- position: fixed;
- top: 0;
- left: 0;
- width: 100%;
- height: 100%;
- z-index: -1;
- background: radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%),
- radial-gradient(circle at 100% 100%, #2e1065 0%, transparent 50%),
- radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
- }
+        .bg-animate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%),
+                        radial-gradient(circle at 100% 100%, #2e1065 0%, transparent 50%),
+                        radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+        }
 
- .glass-panel {
- background: rgba(15, 23, 42, 0.75);
- backdrop-filter: blur(24px);
- border: 1px solid rgba(255, 255, 255, 0.1);
- border-radius: 24px;
- box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
- display: flex;
- flex-direction: column;
- width: 100%;
- height: 100%;
- max-height: 90vh;
- }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            max-height: 90vh;
+        }
 
- @media (max-width: 768px) {
- .glass-panel {
- max-height: none;
- border-radius: 0;
- border: none;
- }
- }
+        @media (max-width: 768px) {
+            .glass-panel {
+                max-height: none;
+                border-radius: 0;
+                border: none;
+            }
+        }
 
- .card-modern {
- background: rgba(255, 255, 255, 0.04);
- border: 1px solid rgba(255, 255, 255, 0.08);
- border-radius: 16px;
- transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
- }
+        .card-modern {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
- .card-modern:hover {
- background: rgba(255, 255, 255, 0.08);
- transform: translateY(-4px);
- border-color: var(--primary);
- }
+        .card-modern:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
 
- .flag-container {
- width: 100%;
- aspect-ratio: 16 / 9;
- overflow: hidden;
- border-radius: 8px;
- border: 1px solid rgba(255, 255, 255, 0.1);
- margin-bottom: 8px;
- }
+        .flag-container {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 8px;
+        }
 
- .flag-img {
- width: 100%;
- height: 100%;
- object-fit: cover;
- transition: transform 0.3s ease;
- }
+        .flag-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
 
- .card-modern:hover .flag-img {
- transform: scale(1.1);
- }
+        .card-modern:hover .flag-img {
+            transform: scale(1.1);
+        }
 
- .custom-scrollbar::-webkit-scrollbar { width: 4px; }
- .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
- .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
 
- .marker-pin {
- width: 16px;
- height: 16px;
- border-radius: 50%;
- border: 2px solid white;
- box-shadow: 0 0 10px rgba(0,0,0,0.5);
- }
- .pin-capital { background: #f59e0b; }
- .pin-city { background: #3b82f6; }
+        .marker-pin {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .pin-capital { background: #f59e0b; }
+        .pin-city { background: #3b82f6; }
 
- .btn-primary {
- background: linear-gradient(135deg, var(--primary), var(--secondary));
- transition: transform 0.2s, filter 0.2s;
- }
- 
- .btn-primary:active { transform: scale(0.95); }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            transition: transform 0.2s, filter 0.2s;
+        }
+        
+        .btn-primary:active { transform: scale(0.95); }
 
- #map { background: #020617; width: 100%; height: 100%; }
+        #map { background: #020617; width: 100%; height: 100%; }
 
- .map-overlay-info {
- position: absolute;
- bottom: 16px;
- left: 16px;
- right: 16px;
- background: rgba(15, 23, 42, 0.9);
- backdrop-filter: blur(16px);
- border: 1px solid rgba(255, 255, 255, 0.1);
- border-radius: 16px;
- padding: 12px 16px;
- z-index: 1000;
- }
+        .map-overlay-info {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 12px 16px;
+            z-index: 1000;
+        }
 
- .fade-in-up {
- animation: fadeInUp 0.5s ease-out forwards;
- }
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
 
- @keyframes fadeInUp {
- from { opacity: 0; transform: translateY(20px); }
- to { opacity: 1; transform: translateY(0); }
- }
- </style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
 
- <div class="bg-animate"></div>
+    <div class="bg-animate"></div>
 
- <div class="flex-1 flex items-center justify-center p-0 md:p-6 lg:p-10">
- <div class="glass-panel max-w-7xl relative overflow-hidden">
- 
- <!-- Navbar -->
- <header class="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
- <div class="flex items-center gap-3 cursor-pointer" onclick="showView('home')">
- <div class="w-9 h-9 btn-primary rounded-lg flex items-center justify-center text-white">
- <i class="fas fa-compass text-lg"></i>
- </div>
- <div class="hidden sm:block">
- <h1 class="text-lg font-800 tracking-tighter leading-none text-white">ALE<span class="text-indigo-400">GEO</span></h1>
- </div>
- </div>
+    <div class="flex-1 flex items-center justify-center p-0 md:p-6 lg:p-10">
+        <div class="glass-panel max-w-7xl relative overflow-hidden">
+            
+            <!-- Navbar -->
+            <header class="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="showView('home')">
+                    <div class="w-9 h-9 btn-primary rounded-lg flex items-center justify-center text-white">
+                        <i class="fas fa-compass text-lg"></i>
+                    </div>
+                    <div class="hidden sm:block">
+                        <h1 class="text-lg font-800 tracking-tighter leading-none text-white">ALE<span class="text-indigo-400">GEO</span></h1>
+                    </div>
+                </div>
 
- <nav class="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5">
- <button onclick="showView('home')" class="px-3 md:px-5 py-1.5 rounded-lg text-xs md:text-sm font-bold hover:bg-white/10 transition-all text-white">Home</button>
- <button onclick="showView('italia')" class="px-3 md:px-5 py-1.5 rounded-lg text-xs md:text-sm font-bold hover:bg-white/10 transition-all text-white">Italia</button>
- <button onclick="showView('atlante')" class="px-3 md:px-5 py-1.5 rounded-lg text-xs md:text-sm font-bold hover:bg-white/10 transition-all text-white">Atlante</button>
- <button onclick="showView('quiz-menu')" class="px-3 md:px-5 py-1.5 rounded-lg text-xs md:text-sm font-bold text-amber-400 hover:bg-amber-400/10 transition-all">Quiz</button>
- </nav>
+                <nav class="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5">
+                    <button onclick="showView('home')" class="px-3 md:px-5 py-1.5 rounded-lg text-xs md:text-sm font-bold hover:bg-white/10 transition-all text-white">Home</button>
+                    <button onclick="showView('italia')" class="px-3 md:px-5 py-1.5 rounded-lg text-xs md:text-sm font-bold hover:bg-white/10 transition-all text-white">Italia</button>
+                    <button onclick="showView('atlante')" class="px-3 md:px-5 py-1.5 rounded-lg text-xs md:text-sm font-bold hover:bg-white/10 transition-all text-white">Atlante</button>
+                    <button onclick="showView('quiz-menu')" class="px-3 md:px-5 py-1.5 rounded-lg text-xs md:text-sm font-bold text-amber-400 hover:bg-amber-400/10 transition-all">Quiz</button>
+                </nav>
 
- <div id="clock" class="hidden md:block text-xs font-mono bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 text-indigo-300">00:00:00</div>
- </header>
+                <div id="clock" class="hidden md:block text-xs font-mono bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 text-indigo-300">00:00:00</div>
+            </header>
 
- <!-- Contenuto principale -->
- <main class="flex-1 overflow-hidden relative">
- 
- <!-- HOME VIEW -->
- <div id="view-home" class="h-full flex flex-col items-center justify-center text-center p-6 fade-in-up">
- <span class="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-bold uppercase tracking-widest mb-4 border border-indigo-500/20">Auto-Zoom Attivo</span>
- <h2 class="text-3xl md:text-5xl font-800 mb-4 bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
- Il mondo a portata di tap.
- </h2>
- <p class="text-slate-400 max-w-md mb-8 text-sm md:text-base">Esplora mappe dettagliate e confini senza dover regolare manualmente lo zoom.</p>
- 
- <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl px-4">
- <div onclick="showView('italia')" class="card-modern p-5 cursor-pointer group">
- <i class="fas fa-map-location-dot text-2xl text-emerald-400 mb-3 block"></i>
- <h3 class="font-bold text-sm text-white">Italia</h3>
- </div>
- <div onclick="showView('atlante')" class="card-modern p-5 cursor-pointer group">
- <i class="fas fa-globe-americas text-2xl text-indigo-400 mb-3 block"></i>
- <h3 class="font-bold text-sm text-white">Atlante</h3>
- </div>
- <div onclick="showView('quiz-menu')" class="card-modern p-5 cursor-pointer group">
- <i class="fas fa-trophy text-2xl text-amber-400 mb-3 block"></i>
- <h3 class="font-bold text-sm text-white">Quiz</h3>
- </div>
- </div>
- </div>
+            <!-- Contenuto principale -->
+            <main class="flex-1 overflow-hidden relative">
+                
+                <!-- HOME VIEW -->
+                <div id="view-home" class="h-full flex flex-col items-center justify-center text-center p-6 fade-in-up">
+                    <span class="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-bold uppercase tracking-widest mb-4 border border-indigo-500/20">Auto-Zoom Attivo</span>
+                    <h2 class="text-3xl md:text-5xl font-800 mb-4 bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+                        Il mondo a portata di tap.
+                    </h2>
+                    <p class="text-slate-400 max-w-md mb-8 text-sm md:text-base">Esplora mappe dettagliate e confini senza dover regolare manualmente lo zoom.</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl px-4">
+                        <div onclick="showView('italia')" class="card-modern p-5 cursor-pointer group">
+                            <i class="fas fa-map-location-dot text-2xl text-emerald-400 mb-3 block"></i>
+                            <h3 class="font-bold text-sm text-white">Italia</h3>
+                        </div>
+                        <div onclick="showView('atlante')" class="card-modern p-5 cursor-pointer group">
+                            <i class="fas fa-globe-americas text-2xl text-indigo-400 mb-3 block"></i>
+                            <h3 class="font-bold text-sm text-white">Atlante</h3>
+                        </div>
+                        <div onclick="showView('quiz-menu')" class="card-modern p-5 cursor-pointer group">
+                            <i class="fas fa-trophy text-2xl text-amber-400 mb-3 block"></i>
+                            <h3 class="font-bold text-sm text-white">Quiz</h3>
+                        </div>
+                    </div>
+                </div>
 
- <!-- ITALIA VIEW -->
- <div id="view-italia" class="hidden h-full flex flex-col p-6 fade-in-up">
- <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
- <h2 class="text-2xl font-800 text-white">Regioni d'Italia</h2>
- <div class="relative w-full md:w-64">
- <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
- <input type="text" id="it-search" oninput="filterItalia()" placeholder="Cerca regione..." class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 outline-none focus:border-indigo-500 text-xs text-white">
- </div>
- </div>
- <div id="it-list" class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 overflow-y-auto custom-scrollbar pr-1 pb-6"></div>
- </div>
+                <!-- ITALIA VIEW -->
+                <div id="view-italia" class="hidden h-full flex flex-col p-6 fade-in-up">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <h2 class="text-2xl font-800 text-white">Regioni d'Italia</h2>
+                        <div class="relative w-full md:w-64">
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                            <input type="text" id="it-search" oninput="filterItalia()" placeholder="Cerca regione..." class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 outline-none focus:border-indigo-500 text-xs text-white">
+                        </div>
+                    </div>
+                    <div id="it-list" class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 overflow-y-auto custom-scrollbar pr-1 pb-6"></div>
+                </div>
 
- <!-- ATLANTE VIEW -->
- <div id="view-atlante" class="hidden h-full flex flex-col p-6 fade-in-up">
- <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
- <h2 class="text-2xl font-800 text-white">Atlante Mondiale</h2>
- <div class="relative w-full md:w-64">
- <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
- <input type="text" id="world-search" oninput="filterWorld()" placeholder="Cerca nazione..." class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 outline-none focus:border-indigo-500 text-xs text-white">
- </div>
- </div>
- <div id="world-grid" class="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 overflow-y-auto custom-scrollbar pr-1 pb-6"></div>
- </div>
+                <!-- ATLANTE VIEW -->
+                <div id="view-atlante" class="hidden h-full flex flex-col p-6 fade-in-up">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <h2 class="text-2xl font-800 text-white">Atlante Mondiale</h2>
+                        <div class="relative w-full md:w-64">
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                            <input type="text" id="world-search" oninput="filterWorld()" placeholder="Cerca nazione..." class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 outline-none focus:border-indigo-500 text-xs text-white">
+                        </div>
+                    </div>
+                    <div id="world-grid" class="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 overflow-y-auto custom-scrollbar pr-1 pb-6"></div>
+                </div>
 
- <!-- QUIZ VIEWS -->
- <div id="view-quiz-menu" class="hidden h-full flex flex-col items-center justify-center p-6 text-center fade-in-up">
- <div class="card-modern p-8 max-w-sm w-full">
- <i class="fas fa-brain text-4xl text-amber-500 mb-4 block"></i>
- <h2 class="text-xl font-800 mb-2 text-white">Geo Challenge</h2>
- <p class="text-slate-400 text-xs mb-6">Indovina la capitale delle nazioni del mondo.</p>
- <button onclick="startQuiz()" class="btn-primary w-full py-3 rounded-xl font-800 text-sm uppercase tracking-widest text-white">Inizia Quiz</button>
- </div>
- </div>
+                <!-- QUIZ VIEWS -->
+                <div id="view-quiz-menu" class="hidden h-full flex flex-col items-center justify-center p-6 text-center fade-in-up">
+                    <div class="card-modern p-8 max-w-sm w-full">
+                        <i class="fas fa-brain text-4xl text-amber-500 mb-4 block"></i>
+                        <h2 class="text-xl font-800 mb-2 text-white">Geo Challenge</h2>
+                        <p class="text-slate-400 text-xs mb-6">Indovina la capitale. Più rispondi correttamente, più sali! Se sbagli, ricominci.</p>
+                        <div id="best-score-display" class="mb-6 bg-amber-500/10 py-2 rounded-lg border border-amber-500/20 text-amber-500 font-bold text-xs uppercase">Record: 0 Punti</div>
+                        <button onclick="startQuiz()" class="btn-primary w-full py-3 rounded-xl font-800 text-sm uppercase tracking-widest text-white">Inizia Survival Quiz</button>
+                    </div>
+                </div>
 
- <div id="view-quiz" class="hidden h-full flex flex-col items-center justify-center p-6">
- <div class="max-w-md w-full fade-in-up">
- <div class="flex justify-between items-center mb-4">
- <span id="q-progress" class="text-indigo-400 font-bold text-[10px] tracking-widest uppercase">DOMANDA 1/10</span>
- <span id="q-score" class="bg-white/5 px-3 py-1 rounded-full border border-white/10 text-xs font-bold text-white">0 PUNTI</span>
- </div>
- <div class="card-modern p-6 text-center">
- <img id="q-flag" src="" class="h-20 mx-auto rounded-lg shadow-xl mb-4 border border-white/10 object-cover aspect-video">
- <h3 id="q-country" class="text-xl font-800 mb-6 text-white">-</h3>
- <div id="q-options" class="grid grid-cols-1 gap-3"></div>
- </div>
- </div>
- </div>
+                <div id="view-quiz" class="hidden h-full flex flex-col items-center justify-center p-6">
+                    <div class="max-w-md w-full fade-in-up">
+                        <div class="flex justify-between items-center mb-4">
+                            <span id="q-progress" class="text-indigo-400 font-bold text-[10px] tracking-widest uppercase">MODALITÀ SURVIVAL</span>
+                            <span id="q-score" class="bg-white/5 px-3 py-1 rounded-full border border-white/10 text-xs font-bold text-white">0 PUNTI</span>
+                        </div>
+                        <div class="card-modern p-6 text-center">
+                            <img id="q-flag" src="" class="h-20 mx-auto rounded-lg shadow-xl mb-4 border border-white/10 object-cover aspect-video">
+                            <h3 id="q-country" class="text-xl font-800 mb-6 text-white">-</h3>
+                            <div id="q-options" class="grid grid-cols-1 gap-3"></div>
+                            <div id="quiz-msg" class="mt-4 text-xs font-bold italic opacity-0 transition-opacity">Messaggio</div>
+                        </div>
+                    </div>
+                </div>
 
- </main>
- </div>
- </div>
+            </main>
+        </div>
+    </div>
 
- <!-- Modal Mappa -->
- <div id="map-modal" class="fixed inset-0 z-[2000] hidden bg-slate-950/95 backdrop-blur-xl flex flex-col">
- <div class="flex items-center justify-between p-4 border-b border-white/10 bg-slate-900/50">
- <div class="flex items-center gap-4">
- <img id="m-flag" src="" class="w-10 h-6 rounded object-cover border border-white/10 hidden">
- <div>
- <h3 id="m-name" class="text-lg font-800 leading-tight text-white">Località</h3>
- <p id="m-sub" class="text-[10px] text-slate-400 uppercase tracking-widest">Dettagli</p>
- </div>
- </div>
- <button onclick="closeMap()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20 text-white transition-all">
- <i class="fas fa-times"></i>
- </button>
- </div>
+    <!-- Modal Mappa -->
+    <div id="map-modal" class="fixed inset-0 z-[2000] hidden bg-slate-950/95 backdrop-blur-xl flex flex-col">
+        <div class="flex items-center justify-between p-4 border-b border-white/10 bg-slate-900/50">
+            <div class="flex items-center gap-4">
+                <img id="m-flag" src="" class="w-10 h-6 rounded object-cover border border-white/10 hidden">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 id="m-name" class="text-lg font-800 leading-tight text-white">Località</h3>
+                        <a id="m-wiki-icon" href="#" target="_blank" class="text-slate-500 hover:text-indigo-400 transition-colors">
+                            <i class="fab fa-wikipedia-w text-sm"></i>
+                        </a>
+                    </div>
+                    <p id="m-sub" class="text-[10px] text-slate-400 uppercase tracking-widest">Dettagli</p>
+                </div>
+            </div>
+            <button onclick="closeMap()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20 text-white transition-all">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
 
- <div class="flex-1 relative">
- <div id="map"></div>
- 
- <div class="map-overlay-info flex items-center justify-between">
- <div class="flex items-center gap-4">
- <div class="text-center">
- <span id="m-temp" class="text-lg font-800 text-indigo-300 block">--°</span>
- <span class="text-[8px] text-slate-500 font-bold uppercase">Meteo</span>
- </div>
- <div class="w-[1px] h-8 bg-white/10"></div>
- <div class="hidden sm:flex gap-3 text-[9px] font-bold uppercase text-white">
- <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div> Capoluogo</div>
- <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-blue-500"></div> Città</div>
- </div>
- </div>
- <button onclick="zoomToFeatures()" class="bg-indigo-500/20 text-indigo-400 px-3 py-1.5 rounded-lg text-[10px] font-bold border border-indigo-500/30 uppercase">
- Adatta Vista
- </button>
- </div>
- </div>
- </div>
+        <div class="flex-1 relative">
+            <div id="map"></div>
+            
+            <div class="map-overlay-info">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="text-center">
+                            <span id="m-temp" class="text-lg font-800 text-indigo-300 block">--°</span>
+                            <span class="text-[8px] text-slate-500 font-bold uppercase">Meteo</span>
+                        </div>
+                        <div class="w-[1px] h-8 bg-white/10"></div>
+                        <div class="flex flex-col gap-0.5">
+                            <span id="m-pop" class="text-[10px] font-bold text-white">-</span>
+                            <span class="text-[8px] text-slate-500 font-bold uppercase">Abitanti</span>
+                        </div>
+                        <div class="w-[1px] h-8 bg-white/10"></div>
+                        <div class="flex flex-col gap-0.5">
+                            <span id="m-curr" class="text-[10px] font-bold text-white">-</span>
+                            <span class="text-[8px] text-slate-500 font-bold uppercase">Valuta</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a id="m-wiki-btn" href="#" target="_blank" class="bg-white/5 hover:bg-white/10 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold border border-white/10 uppercase">Wikipedia</a>
+                        <button onclick="zoomToFeatures()" class="bg-indigo-500/20 text-indigo-400 px-3 py-1.5 rounded-lg text-[10px] font-bold border border-indigo-500/30 uppercase">Adatta Vista</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
- <script>
- let countries = [];
- let score = 0;
- let qIndex = 0;
- let isAnswering = false;
- let map = null;
- let markers = L.layerGroup();
- let boundaries = null;
+    <script>
+        let countries = [];
+        let score = 0;
+        let bestScore = localStorage.getItem('alegeo_best') || 0;
+        let quizActive = false;
+        let isAnswering = false;
+        let map = null;
+        let markers = L.layerGroup();
+        let boundaries = null;
 
- const regioniItalia = [
- { name: "Abruzzo", capital: "L'Aquila", lat: 42.3512, lng: 13.3984, cities: [{n: "Pescara", l: 42.4618, g: 14.2142}, {n: "Chieti", l: 42.3510, g: 14.1673}, {n: "Teramo", l: 42.6587, g: 13.7043}] },
- { name: "Basilicata", capital: "Potenza", lat: 40.6404, lng: 15.8047, cities: [{n: "Matera", l: 40.6664, g: 16.6043}] },
- { name: "Calabria", capital: "Catanzaro", lat: 38.9098, lng: 16.5877, cities: [{n: "Reggio Calabria", l: 38.1144, g: 15.6500}, {n: "Cosenza", l: 39.2983, g: 16.2537}] },
- { name: "Campania", capital: "Napoli", lat: 40.8518, lng: 14.2681, cities: [{n: "Salerno", l: 40.6779, g: 14.7659}, {n: "Caserta", l: 41.0734, g: 14.3323}, {n: "Benevento", l: 41.1298, g: 14.7827}] },
- { name: "Emilia-Romagna", capital: "Bologna", lat: 44.4949, lng: 11.3426, cities: [{n: "Modena", l: 44.6471, g: 10.9252}, {n: "Parma", l: 44.8015, g: 10.3279}, {n: "Rimini", l: 44.0575, g: 12.5653}, {n: "Ravenna", l: 44.4184, g: 12.2035}] },
- { name: "Friuli Venezia Giulia", capital: "Trieste", lat: 45.6495, lng: 13.7768, cities: [{n: "Udine", l: 46.0625, g: 13.2358}, {n: "Pordenone", l: 45.9568, g: 12.6605}] },
- { name: "Lazio", capital: "Roma", lat: 41.8919, lng: 12.5113, cities: [{n: "Latina", l: 41.4676, g: 12.9037}, {n: "Viterbo", l: 42.4174, g: 12.1047}, {n: "Frosinone", l: 41.6397, g: 13.3413}] },
- { name: "Liguria", capital: "Genova", lat: 44.4056, lng: 8.9463, cities: [{n: "La Spezia", l: 44.1025, g: 9.8241}, {n: "Savona", l: 44.3072, g: 8.4811}] },
- { name: "Lombardia", capital: "Milano", lat: 45.4642, lng: 9.1900, cities: [{n: "Brescia", l: 45.5416, g: 10.2118}, {n: "Bergamo", l: 45.6983, g: 9.6773}, {n: "Monza", l: 45.5845, g: 9.2735}, {n: "Como", l: 45.8081, g: 9.0852}, {n: "Pavia", l: 45.1850, g: 9.1559}] },
- { name: "Marche", capital: "Ancona", lat: 43.6158, lng: 13.5189, cities: [{n: "Pesaro", l: 43.9103, g: 12.9133}, {n: "Ascoli Piceno", l: 42.8540, g: 13.5755}] },
- { name: "Molise", capital: "Campobasso", lat: 41.5603, lng: 14.6644, cities: [{n: "Isernia", l: 41.5954, g: 14.2343}] },
- { name: "Piemonte", capital: "Torino", lat: 45.0703, lng: 7.6869, cities: [{n: "Novara", l: 45.4468, g: 8.6196}, {n: "Alessandria", l: 44.9129, g: 8.6154}, {n: "Cuneo", l: 44.3845, g: 7.5427}] },
- { name: "Puglia", capital: "Bari", lat: 41.1171, lng: 16.8719, cities: [{n: "Lecce", l: 40.3515, g: 18.1750}, {n: "Taranto", l: 40.4677, g: 17.2470}, {n: "Foggia", l: 41.4622, g: 15.5446}] },
- { name: "Sardegna", capital: "Cagliari", lat: 39.2238, lng: 9.1217, cities: [{n: "Sassari", l: 40.7259, g: 8.5556}, {n: "Olbia", l: 40.9214, g: 9.4948}] },
- { name: "Sicilia", capital: "Palermo", lat: 38.1157, lng: 13.3615, cities: [{n: "Catania", l: 37.5079, g: 15.0830}, {n: "Messina", l: 38.1938, g: 15.5540}, {n: "Siracusa", l: 37.0755, g: 15.2866}, {n: "Agrigento", l: 37.3107, g: 13.5765}] },
- { name: "Toscana", capital: "Firenze", lat: 43.7696, lng: 11.2558, cities: [{n: "Pisa", l: 43.7085, g: 10.4036}, {n: "Siena", l: 43.3182, g: 11.3306}, {n: "Livorno", l: 43.5485, g: 10.3106}] },
- { name: "Trentino-Alto Adige", capital: "Trento", lat: 46.0679, lng: 11.1211, cities: [{n: "Bolzano", l: 46.4981, g: 11.3548}, {n: "Merano", l: 46.6703, g: 11.1593}] },
- { name: "Umbria", capital: "Perugia", lat: 43.1107, lng: 12.3908, cities: [{n: "Terni", l: 42.5641, g: 12.6414}, {n: "Spoleto", l: 42.7340, g: 12.7368}] },
- { name: "Valle d'Aosta", capital: "Aosta", lat: 45.7349, lng: 7.3201, cities: [{n: "Courmayeur", l: 45.7871, g: 6.9657}] },
- { name: "Veneto", capital: "Venezia", lat: 45.4408, lng: 12.3155, cities: [{n: "Verona", l: 45.4384, g: 10.9916}, {n: "Padova", l: 45.4064, g: 11.8768}, {n: "Vicenza", l: 45.5455, g: 11.5475}, {n: "Treviso", l: 45.6669, g: 12.2431}] }
- ];
+        const regioniItalia = [
+            { name: "Abruzzo", capital: "L'Aquila", lat: 42.3512, lng: 13.3984, cities: [{n: "Pescara", l: 42.4618, g: 14.2142}, {n: "Chieti", l: 42.3510, g: 14.1673}, {n: "Teramo", l: 42.6587, g: 13.7043}] },
+            { name: "Basilicata", capital: "Potenza", lat: 40.6404, lng: 15.8047, cities: [{n: "Matera", l: 40.6664, g: 16.6043}] },
+            { name: "Calabria", capital: "Catanzaro", lat: 38.9098, lng: 16.5877, cities: [{n: "Reggio Calabria", l: 38.1144, g: 15.6500}, {n: "Cosenza", l: 39.2983, g: 16.2537}] },
+            { name: "Campania", capital: "Napoli", lat: 40.8518, lng: 14.2681, cities: [{n: "Salerno", l: 40.6779, g: 14.7659}, {n: "Caserta", l: 41.0734, g: 14.3323}, {n: "Benevento", l: 41.1298, g: 14.7827}] },
+            { name: "Emilia-Romagna", capital: "Bologna", lat: 44.4949, lng: 11.3426, cities: [{n: "Modena", l: 44.6471, g: 10.9252}, {n: "Parma", l: 44.8015, g: 10.3279}, {n: "Rimini", l: 44.0575, g: 12.5653}, {n: "Ravenna", l: 44.4184, g: 12.2035}] },
+            { name: "Friuli Venezia Giulia", capital: "Trieste", lat: 45.6495, lng: 13.7768, cities: [{n: "Udine", l: 46.0625, g: 13.2358}, {n: "Pordenone", l: 45.9568, g: 12.6605}] },
+            { name: "Lazio", capital: "Roma", lat: 41.8919, lng: 12.5113, cities: [{n: "Latina", l: 41.4676, g: 12.9037}, {n: "Viterbo", l: 42.4174, g: 12.1047}, {n: "Frosinone", l: 41.6397, g: 13.3413}] },
+            { name: "Liguria", capital: "Genova", lat: 44.4056, lng: 8.9463, cities: [{n: "La Spezia", l: 44.1025, g: 9.8241}, {n: "Savona", l: 44.3072, g: 8.4811}] },
+            { name: "Lombardia", capital: "Milano", lat: 45.4642, lng: 9.1900, cities: [{n: "Brescia", l: 45.5416, g: 10.2118}, {n: "Bergamo", l: 45.6983, g: 9.6773}, {n: "Monza", l: 45.5845, g: 9.2735}, {n: "Como", l: 45.8081, g: 9.0852}, {n: "Pavia", l: 45.1850, g: 9.1559}] },
+            { name: "Marche", capital: "Ancona", lat: 43.6158, lng: 13.5189, cities: [{n: "Pesaro", l: 43.9103, g: 12.9133}, {n: "Ascoli Piceno", l: 42.8540, g: 13.5755}] },
+            { name: "Molise", capital: "Campobasso", lat: 41.5603, lng: 14.6644, cities: [{n: "Isernia", l: 41.5954, g: 14.2343}] },
+            { name: "Piemonte", capital: "Torino", lat: 45.0703, lng: 7.6869, cities: [{n: "Novara", l: 45.4468, g: 8.6196}, {n: "Alessandria", l: 44.9129, g: 8.6154}, {n: "Cuneo", l: 44.3845, g: 7.5427}] },
+            { name: "Puglia", capital: "Bari", lat: 41.1171, lng: 16.8719, cities: [{n: "Lecce", l: 40.3515, g: 18.1750}, {n: "Taranto", l: 40.4677, g: 17.2470}, {n: "Foggia", l: 41.4622, g: 15.5446}] },
+            { name: "Sardegna", capital: "Cagliari", lat: 39.2238, lng: 9.1217, cities: [{n: "Sassari", l: 40.7259, g: 8.5556}, {n: "Olbia", l: 40.9214, g: 9.4948}] },
+            { name: "Sicilia", capital: "Palermo", lat: 38.1157, lng: 13.3615, cities: [{n: "Catania", l: 37.5079, g: 15.0830}, {n: "Messina", l: 38.1938, g: 15.5540}, {n: "Siracusa", l: 37.0755, g: 15.2866}, {n: "Agrigento", l: 37.3107, g: 13.5765}] },
+            { name: "Toscana", capital: "Firenze", lat: 43.7696, lng: 11.2558, cities: [{n: "Pisa", l: 43.7085, g: 10.4036}, {n: "Siena", l: 43.3182, g: 11.3306}, {n: "Livorno", l: 43.5485, g: 10.3106}] },
+            { name: "Trentino-Alto Adige", capital: "Trento", lat: 46.0679, lng: 11.1211, cities: [{n: "Bolzano", l: 46.4981, g: 11.3548}, {n: "Merano", l: 46.6703, g: 11.1593}] },
+            { name: "Umbria", capital: "Perugia", lat: 43.1107, lng: 12.3908, cities: [{n: "Terni", l: 42.5641, g: 12.6414}, {n: "Spoleto", l: 42.7340, g: 12.7368}] },
+            { name: "Valle d'Aosta", capital: "Aosta", lat: 45.7349, lng: 7.3201, cities: [{n: "Courmayeur", l: 45.7871, g: 6.9657}] },
+            { name: "Veneto", capital: "Venezia", lat: 45.4408, lng: 12.3155, cities: [{n: "Verona", l: 45.4384, g: 10.9916}, {n: "Padova", l: 45.4064, g: 11.8768}, {n: "Vicenza", l: 45.5455, g: 11.5475}, {n: "Treviso", l: 45.6669, g: 12.2431}] }
+        ];
 
- async function init() {
- try {
- const res = await fetch('https://restcountries.com/v3.1/all?fields=name,capital,flags,latlng,translations,cca3,capitalInfo');
- const data = await res.json();
- countries = data.filter(c => c.capital && c.capital[0])
- .map(c => ({
- name: c.translations.ita?.common || c.name.common,
- capital: c.capital[0],
- flag: c.flags.svg,
- lat: c.latlng[0],
- lng: c.latlng[1],
- id: c.cca3,
- capLat: c.capitalInfo?.latlng?.[0] || c.latlng[0],
- capLng: c.capitalInfo?.latlng?.[1] || c.latlng[1]
- })).sort((a,b) => a.name.localeCompare(b.name));
- 
- renderItalia();
- renderWorld();
- startClock();
- } catch (err) { console.error("Init Error", err); }
- }
+        async function init() {
+            try {
+                const res = await fetch('https://restcountries.com/v3.1/all?fields=name,capital,flags,latlng,translations,cca3,capitalInfo,population,currencies');
+                const data = await res.json();
+                countries = data.filter(c => c.capital && c.capital[0])
+                .map(c => {
+                    let currency = "N/A";
+                    if(c.currencies) currency = Object.values(c.currencies)[0].name;
+                    return {
+                        name: c.translations.ita?.common || c.name.common,
+                        capital: c.capital[0],
+                        flag: c.flags.svg,
+                        lat: c.latlng[0],
+                        lng: c.latlng[1],
+                        id: c.cca3,
+                        capLat: c.capitalInfo?.latlng?.[0] || c.latlng[0],
+                        capLng: c.capitalInfo?.latlng?.[1] || c.latlng[1],
+                        pop: c.population ? c.population.toLocaleString('it-IT') : "0",
+                        curr: currency
+                    };
+                }).sort((a,b) => a.name.localeCompare(b.name));
+                
+                renderItalia();
+                renderWorld();
+                startClock();
+                document.getElementById('best-score-display').innerText = `Record: ${bestScore} Punti`;
+            } catch (err) { console.error("Init Error", err); }
+        }
 
- function showView(viewId) {
- ['home', 'italia', 'atlante', 'quiz-menu', 'quiz'].forEach(id => {
- const el = document.getElementById('view-' + id);
- if(el) el.classList.add('hidden');
- });
- document.getElementById('view-' + viewId).classList.remove('hidden');
- }
+        function showView(viewId) {
+            ['home', 'italia', 'atlante', 'quiz-menu', 'quiz'].forEach(id => {
+                const el = document.getElementById('view-' + id);
+                if(el) el.classList.add('hidden');
+            });
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+            if(viewId !== 'quiz') quizActive = false;
+        }
 
- function renderItalia() {
- const list = document.getElementById('it-list');
- list.innerHTML = regioniItalia.map(r => `
- <div onclick="openMapItalia('${r.name}')" class="card-modern p-4 cursor-pointer flex justify-between items-center group">
- <div>
- <h4 class="font-bold text-white text-sm">${r.name}</h4>
- <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">${r.capital}</p>
- </div>
- <i class="fas fa-expand-arrows-alt text-[10px] text-slate-600 group-hover:text-emerald-400"></i>
- </div>
- `).join('');
- }
+        function renderItalia() {
+            const list = document.getElementById('it-list');
+            list.innerHTML = regioniItalia.map(r => `
+                <div onclick="openMapItalia('${r.name}')" class="card-modern p-4 cursor-pointer flex justify-between items-center group">
+                    <div>
+                        <h4 class="font-bold text-white text-sm">${r.name}</h4>
+                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">${r.capital}</p>
+                    </div>
+                    <i class="fas fa-expand-arrows-alt text-[10px] text-slate-600 group-hover:text-emerald-400"></i>
+                </div>
+            `).join('');
+        }
 
- function filterItalia() {
- const t = document.getElementById('it-search').value.toLowerCase();
- const filtered = regioniItalia.filter(r => r.name.toLowerCase().includes(t));
- const list = document.getElementById('it-list');
- list.innerHTML = filtered.map(r => `
- <div onclick="openMapItalia('${r.name}')" class="card-modern p-4 cursor-pointer flex justify-between items-center">
- <div>
- <h4 class="font-bold text-white text-sm">${r.name}</h4>
- <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">${r.capital}</p>
- </div>
- <i class="fas fa-chevron-right text-[10px] text-slate-600"></i>
- </div>
- `).join('');
- }
+        function filterItalia() {
+            const t = document.getElementById('it-search').value.toLowerCase();
+            const filtered = regioniItalia.filter(r => r.name.toLowerCase().includes(t));
+            const list = document.getElementById('it-list');
+            list.innerHTML = filtered.map(r => `
+                <div onclick="openMapItalia('${r.name}')" class="card-modern p-4 cursor-pointer flex justify-between items-center">
+                    <div>
+                        <h4 class="font-bold text-white text-sm">${r.name}</h4>
+                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">${r.capital}</p>
+                    </div>
+                    <i class="fas fa-expand-arrows-alt text-[10px] text-slate-600"></i>
+                </div>
+            `).join('');
+        }
 
- function renderWorld() {
- const grid = document.getElementById('world-grid');
- grid.innerHTML = countries.map(c => `
- <div onclick="openMapWorld('${c.id}')" class="card-modern p-3 cursor-pointer text-center group">
- <div class="flag-container">
- <img src="${c.flag}" class="flag-img" loading="lazy">
- </div>
- <p class="text-[10px] font-bold text-slate-300 truncate">${c.name}</p>
- </div>
- `).join('');
- }
+        function renderWorld() {
+            const grid = document.getElementById('world-grid');
+            grid.innerHTML = countries.map(c => `
+                <div onclick="openMapWorld('${c.id}')" class="card-modern p-3 cursor-pointer text-center group">
+                    <div class="flag-container">
+                        <img src="${c.flag}" class="flag-img" loading="lazy">
+                    </div>
+                    <p class="text-[10px] font-bold text-slate-300 truncate">${c.name}</p>
+                </div>
+            `).join('');
+        }
 
- function filterWorld() {
- const t = document.getElementById('world-search').value.toLowerCase();
- const filtered = countries.filter(c => c.name.toLowerCase().includes(t));
- const grid = document.getElementById('world-grid');
- grid.innerHTML = filtered.map(c => `
- <div onclick="openMapWorld('${c.id}')" class="card-modern p-3 cursor-pointer text-center group">
- <div class="flag-container">
- <img src="${c.flag}" class="flag-img" loading="lazy">
- </div>
- <p class="text-[10px] font-bold text-slate-300 truncate">${c.name}</p>
- </div>
- `).join('');
- }
+        function filterWorld() {
+            const t = document.getElementById('world-search').value.toLowerCase();
+            const filtered = countries.filter(c => c.name.toLowerCase().includes(t));
+            const grid = document.getElementById('world-grid');
+            grid.innerHTML = filtered.map(c => `
+                <div onclick="openMapWorld('${c.id}')" class="card-modern p-3 cursor-pointer text-center group">
+                    <div class="flag-container">
+                        <img src="${c.flag}" class="flag-img" loading="lazy">
+                    </div>
+                    <p class="text-[10px] font-bold text-slate-300 truncate">${c.name}</p>
+                </div>
+            `).join('');
+        }
 
- // FUNZIONE DI AUTO-ZOOM
- function zoomToFeatures() {
- if (boundaries && map) {
- map.fitBounds(boundaries.getBounds(), { padding: [40, 40], animate: true });
- }
- }
+        function zoomToFeatures() {
+            if (boundaries && map) {
+                map.fitBounds(boundaries.getBounds(), { padding: [40, 40], animate: true });
+            }
+        }
 
- async function openMapItalia(name) {
- const r = regioniItalia.find(x => x.name === name);
- setupMapUI(r.name, `Capoluogo: ${r.capital}`, null);
- initLeaflet();
- 
- markers.clearLayers();
- L.marker([r.lat, r.lng], { icon: L.divIcon({className: 'marker-pin pin-capital'}) }).addTo(markers).bindPopup(`<b>${r.capital}</b>`);
- r.cities.forEach(c => {
- L.marker([c.l, c.g], { icon: L.divIcon({className: 'marker-pin pin-city'}) }).addTo(markers).bindPopup(`<b>${c.n}</b>`);
- });
+        async function openMapItalia(name) {
+            const r = regioniItalia.find(x => x.name === name);
+            const wikiUrl = `https://it.wikipedia.org/wiki/${encodeURIComponent(r.name)}`;
+            setupMapUI(r.name, `Capoluogo: ${r.capital}`, null, wikiUrl, "-", "Euro");
+            initLeaflet();
+            
+            markers.clearLayers();
+            L.marker([r.lat, r.lng], { icon: L.divIcon({className: 'marker-pin pin-capital'}) }).addTo(markers).bindPopup(`<b>${r.capital}</b>`);
+            r.cities.forEach(c => {
+                L.marker([c.l, c.g], { icon: L.divIcon({className: 'marker-pin pin-city'}) }).addTo(markers).bindPopup(`<b>${c.n}</b>`);
+            });
 
- try {
- const res = await fetch('https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_it_regions.json');
- const data = await res.json();
- const feat = data.features.find(f => f.properties.reg_name.toLowerCase().includes(r.name.toLowerCase()));
- if (feat) {
- boundaries = L.geoJSON(feat, { 
- style: { color: '#10b981', weight: 3, fillOpacity: 0.1 } 
- }).addTo(map);
- zoomToFeatures(); // AUTO-ZOOM
- } else { 
- map.setView([r.lat, r.lng], 8); 
- }
- } catch(e) { map.setView([r.lat, r.lng], 8); }
- 
- getWeather(r.lat, r.lng);
- }
+            try {
+                const res = await fetch('https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_it_regions.json');
+                const data = await res.json();
+                const feat = data.features.find(f => f.properties.reg_name.toLowerCase().includes(r.name.toLowerCase()));
+                if (feat) {
+                    boundaries = L.geoJSON(feat, { 
+                        style: { color: '#10b981', weight: 3, fillOpacity: 0.1 } 
+                    }).addTo(map);
+                    zoomToFeatures();
+                } else { map.setView([r.lat, r.lng], 8); }
+            } catch(e) { map.setView([r.lat, r.lng], 8); }
+            
+            getWeather(r.lat, r.lng);
+        }
 
- async function openMapWorld(id) {
- const c = countries.find(x => x.id === id);
- setupMapUI(c.name, `Capitale: ${c.capital}`, c.flag);
- initLeaflet();
- 
- markers.clearLayers();
- L.marker([c.capLat, c.capLng], { icon: L.divIcon({className: 'marker-pin pin-capital'}) }).addTo(markers).bindPopup(`<b>${c.capital}</b>`);
+        async function openMapWorld(id) {
+            const c = countries.find(x => x.id === id);
+            const wikiUrl = `https://it.wikipedia.org/wiki/${encodeURIComponent(c.name)}`;
+            setupMapUI(c.name, `Capitale: ${c.capital}`, c.flag, wikiUrl, c.pop, c.curr);
+            initLeaflet();
+            
+            markers.clearLayers();
+            L.marker([c.capLat, c.capLng], { icon: L.divIcon({className: 'marker-pin pin-capital'}) }).addTo(markers).bindPopup(`<b>${c.capital}</b>`);
 
- try {
- const res = await fetch(`https://raw.githubusercontent.com/johan/world.geo.json/master/countries/${c.id}.geo.json`);
- if (res.ok) {
- const data = await res.json();
- boundaries = L.geoJSON(data, { 
- style: { color: '#6366f1', weight: 2, fillOpacity: 0.1 } 
- }).addTo(map);
- zoomToFeatures(); // AUTO-ZOOM
- } else { 
- map.setView([c.lat, c.lng], 5); 
- }
- } catch(e) { map.setView([c.lat, c.lng], 5); }
+            try {
+                const res = await fetch(`https://raw.githubusercontent.com/johan/world.geo.json/master/countries/${c.id}.geo.json`);
+                if (res.ok) {
+                    const data = await res.json();
+                    boundaries = L.geoJSON(data, { 
+                        style: { color: '#6366f1', weight: 2, fillOpacity: 0.1 } 
+                    }).addTo(map);
+                    zoomToFeatures();
+                } else { map.setView([c.lat, c.lng], 5); }
+            } catch(e) { map.setView([c.lat, c.lng], 5); }
 
- getWeather(c.capLat, c.capLng);
- }
+            getWeather(c.capLat, c.capLng);
+        }
 
- function setupMapUI(name, sub, flag) {
- document.getElementById('map-modal').classList.remove('hidden');
- document.getElementById('m-name').innerText = name;
- document.getElementById('m-sub').innerText = sub;
- const flagImg = document.getElementById('m-flag');
- if (flag) {
- flagImg.src = flag;
- flagImg.classList.remove('hidden');
- } else {
- flagImg.classList.add('hidden');
- }
- }
+        function setupMapUI(name, sub, flag, wiki, pop, curr) {
+            document.getElementById('map-modal').classList.remove('hidden');
+            document.getElementById('m-name').innerText = name;
+            document.getElementById('m-sub').innerText = sub;
+            document.getElementById('m-pop').innerText = pop;
+            document.getElementById('m-curr').innerText = curr;
+            document.getElementById('m-wiki-icon').href = wiki;
+            document.getElementById('m-wiki-btn').href = wiki;
+            
+            const flagImg = document.getElementById('m-flag');
+            if (flag) {
+                flagImg.src = flag;
+                flagImg.classList.remove('hidden');
+            } else {
+                flagImg.classList.add('hidden');
+            }
+        }
 
- function initLeaflet() {
- if (!map) {
- map = L.map('map', { zoomControl: false, attributionControl: false, tap: false });
- L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
- L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { opacity: 0.7 }).addTo(map);
- markers.addTo(map);
- }
- if (boundaries) map.removeLayer(boundaries);
- setTimeout(() => map.invalidateSize(), 100);
- }
+        function initLeaflet() {
+            if (!map) {
+                map = L.map('map', { zoomControl: false, attributionControl: false, tap: false });
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { opacity: 0.7 }).addTo(map);
+                markers.addTo(map);
+            }
+            if (boundaries) map.removeLayer(boundaries);
+            setTimeout(() => map.invalidateSize(), 100);
+        }
 
- function closeMap() { document.getElementById('map-modal').classList.add('hidden'); }
+        function closeMap() { document.getElementById('map-modal').classList.add('hidden'); }
 
- async function getWeather(lat, lng) {
- try {
- const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`);
- const data = await res.json();
- document.getElementById('m-temp').innerText = `${Math.round(data.current_weather.temperature)}°`;
- } catch(e) { document.getElementById('m-temp').innerText = "--°"; }
- }
+        async function getWeather(lat, lng) {
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`);
+                const data = await res.json();
+                document.getElementById('m-temp').innerText = `${Math.round(data.current_weather.temperature)}°`;
+            } catch(e) { document.getElementById('m-temp').innerText = "--°"; }
+        }
 
- function startClock() {
- setInterval(() => {
- const now = new Date();
- document.getElementById('clock').innerText = now.toLocaleTimeString('it-IT');
- }, 1000);
- }
+        function startClock() {
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('clock').innerText = now.toLocaleTimeString('it-IT');
+            }, 1000);
+        }
 
- // QUIZ
- function startQuiz() {
- score = 0; qIndex = 1; showView('quiz');
- document.getElementById('q-score').innerText = `0 PUNTI`;
- generateQuestion();
- }
+        // QUIZ SURVIVAL
+        function startQuiz() {
+            score = 0; quizActive = true; showView('quiz');
+            document.getElementById('q-score').innerText = `0 PUNTI`;
+            generateQuestion();
+        }
 
- function generateQuestion() {
- if (qIndex > 10) { showView('quiz-menu'); return; }
- isAnswering = false;
- document.getElementById('q-progress').innerText = `DOMANDA ${qIndex}/10`;
- const c = countries[Math.floor(Math.random() * countries.length)];
- currentCorrect = c.capital;
- document.getElementById('q-flag').src = c.flag;
- document.getElementById('q-country').innerText = c.name;
+        function generateQuestion() {
+            if (!quizActive) return;
+            isAnswering = false;
+            document.getElementById('quiz-msg').style.opacity = "0";
+            
+            const c = countries[Math.floor(Math.random() * countries.length)];
+            currentCorrect = c.capital;
+            document.getElementById('q-flag').src = c.flag;
+            document.getElementById('q-country').innerText = c.name;
 
- let opts = [currentCorrect];
- while(opts.length < 4) {
- let r = countries[Math.floor(Math.random() * countries.length)].capital;
- if (!opts.includes(r)) opts.push(r);
- }
- opts.sort(() => Math.random() - 0.5);
+            let opts = [currentCorrect];
+            while(opts.length < 4) {
+                let r = countries[Math.floor(Math.random() * countries.length)].capital;
+                if (!opts.includes(r)) opts.push(r);
+            }
+            opts.sort(() => Math.random() - 0.5);
 
- const container = document.getElementById('q-options');
- container.innerHTML = opts.map(o => `
- <button onclick="checkAnswer(this, '${o}')" class="bg-white/5 border border-white/10 p-3 rounded-lg font-bold text-sm hover:bg-white/10 transition-all text-white">${o}</button>
- `).join('');
- }
+            const container = document.getElementById('q-options');
+            container.innerHTML = opts.map(o => `
+                <button onclick="checkAnswer(this, '${o}')" class="bg-white/5 border border-white/10 p-3 rounded-lg font-bold text-sm hover:bg-white/10 transition-all text-white">${o}</button>
+            `).join('');
+        }
 
- function checkAnswer(btn, val) {
- if (isAnswering) return;
- isAnswering = true;
- if (val === currentCorrect) {
- btn.classList.add('!bg-emerald-500/20', '!border-emerald-500', 'text-emerald-400');
- score += 10;
- document.getElementById('q-score').innerText = `${score} PUNTI`;
- } else {
- btn.classList.add('!bg-red-500/20', '!border-red-500', 'text-red-400');
- }
- setTimeout(() => { qIndex++; generateQuestion(); }, 1000);
- }
+        function checkAnswer(btn, val) {
+            if (isAnswering) return;
+            isAnswering = true;
+            const msg = document.getElementById('quiz-msg');
+            
+            if (val === currentCorrect) {
+                btn.classList.add('!bg-emerald-500/20', '!border-emerald-500', 'text-emerald-400');
+                score += 10;
+                if (score > bestScore) {
+                    bestScore = score;
+                    localStorage.setItem('alegeo_best', bestScore);
+                    document.getElementById('best-score-display').innerText = `Record: ${bestScore} Punti`;
+                }
+                msg.innerText = "Corretto!";
+                msg.className = "mt-4 text-xs font-bold italic text-emerald-400";
+            } else {
+                btn.classList.add('!bg-red-500/20', '!border-red-500', 'text-red-400');
+                msg.innerText = `Sbagliato! Era ${currentCorrect}. Reset!`;
+                msg.className = "mt-4 text-xs font-bold italic text-red-400";
+                score = 0;
+            }
+            
+            msg.style.opacity = "1";
+            document.getElementById('q-score').innerText = `${score} PUNTI`;
+            setTimeout(() => { if(quizActive) generateQuestion(); }, 1500);
+        }
 
- window.onload = init;
- </script>
+        window.onload = init;
+    </script>
 </body>
 </html>
