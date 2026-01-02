@@ -124,7 +124,6 @@
             background: #f59e0b;
         }
 
-        /* Score e Record a lato */
         .quiz-stats-container {
             position: absolute;
             top: 50%;
@@ -163,11 +162,6 @@
                 transform: none;
                 margin: 20px auto;
             }
-            .stat-side {
-                display: flex;
-                gap: 10px;
-                order: -1;
-            }
         }
     </style>
 </head>
@@ -185,7 +179,7 @@
                         <i class="fas fa-globe text-lg"></i>
                     </div>
                     <div>
-                        <h1 class="text-lg font-800 tracking-tighter leading-none text-white">ALE<span class="text-indigo-400">GEO</span></h1>
+                        <h1 class="text-lg font-bold tracking-tighter leading-none text-white">ALE<span class="text-indigo-400">GEO</span></h1>
                     </div>
                 </div>
 
@@ -203,20 +197,29 @@
                 
                 <!-- HOME -->
                 <div id="view-home" class="h-full flex flex-col items-center justify-center text-center p-6 fade-in-up">
-                    <h2 class="text-4xl md:text-6xl font-800 mb-4 bg-gradient-to-r from-white to-indigo-400 bg-clip-text text-transparent">Esplora il Mondo.</h2>
-                    <p class="text-slate-400 max-w-md mb-8">Un atlante interattivo completo con dati in tempo reale e quiz survival.</p>
+                    <h2 class="text-4xl md:text-6xl font-extrabold mb-4 bg-gradient-to-r from-white to-indigo-400 bg-clip-text text-transparent">Esplora il Mondo.</h2>
+                    <p class="text-slate-400 max-w-md mb-8">Un atlante interattivo completo con dati in tempo reale e quiz survival per testare la tua conoscenza geografica.</p>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
-                        <div onclick="showView('italia')" class="card-modern p-6 cursor-pointer"><i class="fas fa-map-marked-alt text-3xl text-emerald-400 mb-4 block"></i><h3 class="font-bold text-white">Italia</h3></div>
-                        <div onclick="showView('atlante')" class="card-modern p-6 cursor-pointer border-indigo-500/50 bg-indigo-500/5"><i class="fas fa-atlas text-3xl text-indigo-400 mb-4 block"></i><h3 class="font-bold text-white">Atlante</h3></div>
-                        <div onclick="showView('quiz-menu')" class="card-modern p-6 cursor-pointer"><i class="fas fa-vial text-3xl text-amber-400 mb-4 block"></i><h3 class="font-bold text-white">Quiz</h3></div>
+                        <div onclick="showView('italia')" class="card-modern p-6 cursor-pointer group">
+                            <i class="fas fa-map-marked-alt text-3xl text-emerald-400 mb-4 block group-hover:scale-110 transition-transform"></i>
+                            <h3 class="font-bold text-white">Italia</h3>
+                        </div>
+                        <div onclick="showView('atlante')" class="card-modern p-6 cursor-pointer border-indigo-500/50 bg-indigo-500/5 group">
+                            <i class="fas fa-atlas text-3xl text-indigo-400 mb-4 block group-hover:scale-110 transition-transform"></i>
+                            <h3 class="font-bold text-white">Atlante</h3>
+                        </div>
+                        <div onclick="showView('quiz-menu')" class="card-modern p-6 cursor-pointer group">
+                            <i class="fas fa-vial text-3xl text-amber-400 mb-4 block group-hover:scale-110 transition-transform"></i>
+                            <h3 class="font-bold text-white">Quiz</h3>
+                        </div>
                     </div>
                 </div>
 
                 <!-- ITALIA -->
                 <div id="view-italia" class="hidden h-full flex flex-col p-6 fade-in-up">
                     <div class="flex items-center justify-between mb-6 shrink-0">
-                        <h2 class="text-2xl font-800 text-white">Regioni d'Italia</h2>
+                        <h2 class="text-2xl font-bold text-white">Regioni d'Italia</h2>
                         <input type="text" oninput="filterItalia(this.value)" placeholder="Cerca regione..." class="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-indigo-500 text-white w-48 md:w-64">
                     </div>
                     <div id="it-list" class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto custom-scrollbar pr-2 pb-6"></div>
@@ -226,8 +229,8 @@
                 <div id="view-atlante" class="hidden h-full flex flex-col p-6 fade-in-up overflow-hidden">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 shrink-0">
                         <div>
-                            <h2 class="text-2xl font-800 text-white leading-tight">Atlante Mondiale</h2>
-                            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Scorri tra tutte le nazioni</p>
+                            <h2 class="text-2xl font-bold text-white leading-tight">Atlante Mondiale</h2>
+                            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Dati aggiornati su ogni nazione</p>
                         </div>
                         <div class="relative">
                             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
@@ -239,12 +242,12 @@
 
                 <!-- QUIZ MENU -->
                 <div id="view-quiz-menu" class="hidden h-full flex flex-col items-center justify-center p-6 text-center fade-in-up">
-                    <div class="card-modern p-10 max-w-sm w-full">
+                    <div class="card-modern p-10 max-w-sm w-full shadow-2xl">
                         <i class="fas fa-trophy text-5xl text-amber-500 mb-6 block"></i>
-                        <h2 class="text-2xl font-800 mb-2 text-white">Geo Challenge</h2>
-                        <p class="text-slate-400 text-sm mb-8">Ogni errore costa caro: <span class="text-red-400 font-bold">-40 punti</span>. Sistema survival attivo.</p>
+                        <h2 class="text-2xl font-bold mb-2 text-white">Geo Challenge</h2>
+                        <p class="text-slate-400 text-sm mb-8">Riconosci le capitali. Attenzione: ogni errore costa <span class="text-red-400 font-bold">-40 punti</span>.</p>
                         <div id="best-score-display" class="mb-8 text-amber-500 font-bold bg-amber-500/10 py-3 rounded-xl border border-amber-500/20">Record: 0</div>
-                        <button onclick="startQuiz()" class="btn-primary w-full py-4 rounded-2xl font-800 uppercase tracking-widest text-white">Inizia ora</button>
+                        <button onclick="startQuiz()" class="btn-primary w-full py-4 rounded-2xl font-bold uppercase tracking-widest text-white hover:brightness-110">Inizia ora</button>
                     </div>
                 </div>
 
@@ -254,18 +257,18 @@
                         
                         <!-- SCORE SINISTRA -->
                         <div id="box-score" class="stat-box order-1 md:order-none">
-                            <span class="text-[10px] uppercase font-800 text-indigo-400 tracking-widest block mb-1">Score</span>
-                            <span id="q-score" class="text-4xl font-900 text-white">0</span>
+                            <span class="text-[10px] uppercase font-bold text-indigo-400 tracking-widest block mb-1">Score</span>
+                            <span id="q-score" class="text-4xl font-black text-white">0</span>
                         </div>
 
                         <!-- CORE QUIZ -->
                         <div class="max-w-md w-full order-3 md:order-none px-4 py-10">
                             <div class="card-modern p-8 text-center fade-in-up border-white/10 shadow-2xl relative overflow-hidden">
                                 <div class="flag-container max-w-[180px] mx-auto shadow-2xl mb-6">
-                                    <img id="q-flag" src="" class="flag-img">
+                                    <img id="q-flag" src="" class="flag-img" alt="Bandiera">
                                 </div>
-                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-2">Seleziona la capitale di:</p>
-                                <h3 id="q-country" class="text-2xl font-800 mb-8 text-white">-</h3>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-2">Qual è la capitale di:</p>
+                                <h3 id="q-country" class="text-2xl font-extrabold mb-8 text-white">-</h3>
                                 
                                 <div id="q-options" class="grid grid-cols-1 gap-3"></div>
                                 
@@ -279,8 +282,8 @@
 
                         <!-- RECORD DESTRA -->
                         <div id="box-best" class="stat-box order-2 md:order-none border-amber-500/30 bg-amber-500/5">
-                            <span class="text-[10px] uppercase font-800 text-amber-500 tracking-widest block mb-1">Record</span>
-                            <span id="q-best" class="text-4xl font-900 text-amber-500">0</span>
+                            <span class="text-[10px] uppercase font-bold text-amber-500 tracking-widest block mb-1">Record</span>
+                            <span id="q-best" class="text-4xl font-black text-amber-500">0</span>
                         </div>
 
                     </div>
@@ -296,7 +299,7 @@
             <div class="flex items-center gap-4">
                 <img id="m-flag" src="" class="w-12 h-8 rounded shadow-lg border border-white/10 hidden object-cover">
                 <div>
-                    <h3 id="m-name" class="text-xl font-800 text-white">Nome</h3>
+                    <h3 id="m-name" class="text-xl font-bold text-white">Nome</h3>
                     <p id="m-sub" class="text-xs text-indigo-400 font-bold uppercase">Dettagli</p>
                 </div>
             </div>
@@ -316,10 +319,10 @@
                     </div>
                     <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
                         <span class="text-[10px] uppercase font-bold text-slate-500 block mb-1">Meteo Locale</span>
-                        <div class="flex items-center justify-between"><span id="m-temp" class="text-2xl font-800 text-indigo-300">--°</span><i class="fas fa-cloud-sun text-slate-400 text-xl"></i></div>
+                        <div class="flex items-center justify-between"><span id="m-temp" class="text-2xl font-black text-indigo-300">--°</span><i class="fas fa-cloud-sun text-slate-400 text-xl"></i></div>
                     </div>
                 </div>
-                <div class="mt-auto"><a id="m-wiki-btn" href="#" target="_blank" class="flex items-center justify-center gap-3 bg-white text-slate-900 w-full py-4 rounded-2xl font-800 text-sm shadow-xl"><i class="fab fa-wikipedia-w"></i> WIKIPEDIA</a></div>
+                <div class="mt-auto"><a id="m-wiki-btn" href="#" target="_blank" class="flex items-center justify-center gap-3 bg-white text-slate-900 w-full py-4 rounded-2xl font-bold text-sm shadow-xl hover:bg-slate-100 transition-colors"><i class="fab fa-wikipedia-w"></i> WIKIPEDIA</a></div>
             </div>
         </div>
     </div>
@@ -361,6 +364,7 @@
         async function init() {
             try {
                 updateRecordDisplay();
+                startClock();
 
                 const res = await fetch('https://restcountries.com/v3.1/all?fields=name,capital,flags,latlng,translations,cca3,capitalInfo,population,currencies');
                 const data = await res.json();
@@ -379,8 +383,9 @@
                 
                 renderItalia();
                 renderWorld();
-                startClock();
-            } catch (err) { console.error(err); }
+            } catch (err) { 
+                console.error("Errore inizializzazione:", err); 
+            }
         }
 
         function showView(viewId) {
@@ -391,19 +396,18 @@
             const target = document.getElementById('view-' + viewId);
             if (target) target.classList.remove('hidden');
             
-            if(viewId !== 'quiz') {
-                quizActive = false;
-            } else {
-                quizActive = true;
-                updateRecordDisplay();
-            }
+            quizActive = (viewId === 'quiz');
+            if (viewId === 'quiz' || viewId === 'quiz-menu') updateRecordDisplay();
         }
 
         function renderItalia(f = "") {
             const list = document.getElementById('it-list');
             list.innerHTML = regioniItalia.filter(r => r.name.toLowerCase().includes(f.toLowerCase())).map(r => `
                 <div onclick="openMapItalia('${r.name.replace(/'/g, "\\'")}')" class="card-modern p-5 cursor-pointer flex justify-between items-center group">
-                    <div><h4 class="font-bold text-white">${r.name}</h4><p class="text-[10px] text-indigo-400 font-bold uppercase">${r.capital}</p></div>
+                    <div>
+                        <h4 class="font-bold text-white">${r.name}</h4>
+                        <p class="text-[10px] text-indigo-400 font-bold uppercase">${r.capital}</p>
+                    </div>
                     <i class="fas fa-chevron-right text-slate-700 group-hover:text-indigo-400 transition-colors"></i>
                 </div>
             `).join('');
@@ -414,7 +418,7 @@
             const filtered = countries.filter(c => c.name.toLowerCase().includes(f.toLowerCase()));
             grid.innerHTML = filtered.map(c => `
                 <div onclick="openMapWorld('${c.id}')" class="card-modern p-4 cursor-pointer group fade-in-up">
-                    <div class="flag-container"><img src="${c.flag}" class="flag-img" loading="lazy"></div>
+                    <div class="flag-container"><img src="${c.flag}" class="flag-img" loading="lazy" alt="${c.name}"></div>
                     <h4 class="text-sm font-bold text-white truncate group-hover:text-indigo-400 transition-colors">${c.name}</h4>
                     <p class="text-[9px] text-slate-500 font-bold uppercase mt-1">${c.capital}</p>
                 </div>
@@ -429,10 +433,10 @@
                 
                 map = L.map('map', { layers: [satellite, labels], zoomControl: false, attributionControl: false });
                 markers.addTo(map);
-                L.control.layers({"Satellite": satellite, "Strade": streets}, {"Etichette": labels, "Marcatori": markers}, { collapsed: false }).addTo(map);
+                L.control.layers({"Satellite": satellite, "Strade": streets}, {"Etichette": labels}, { collapsed: true }).addTo(map);
             }
             if (boundaries) map.removeLayer(boundaries);
-            setTimeout(() => map.invalidateSize(), 100);
+            setTimeout(() => map.invalidateSize(), 200);
         }
 
         function openMapItalia(name) {
@@ -454,7 +458,8 @@
             try {
                 const res = await fetch(`https://raw.githubusercontent.com/johan/world.geo.json/master/countries/${c.id}.geo.json`);
                 if(res.ok) {
-                    boundaries = L.geoJSON(await res.json(), { style: { color: '#6366f1', weight: 2, fillOpacity: 0.2 } }).addTo(map);
+                    const geoData = await res.json();
+                    boundaries = L.geoJSON(geoData, { style: { color: '#6366f1', weight: 2, fillOpacity: 0.2 } }).addTo(map);
                     map.fitBounds(boundaries.getBounds());
                 } else { map.setView([c.lat, c.lng], 4); }
             } catch(e) { map.setView([c.lat, c.lng], 4); }
@@ -473,12 +478,15 @@
         }
 
         function closeMap() { document.getElementById('map-modal').classList.add('hidden'); }
+
         async function getWeather(lat, lng) {
+            const tempEl = document.getElementById('m-temp');
+            tempEl.innerText = "--°";
             try {
                 const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`);
                 const data = await res.json();
-                document.getElementById('m-temp').innerText = `${Math.round(data.current_weather.temperature)}°`;
-            } catch(e) { document.getElementById('m-temp').innerText = "--°"; }
+                tempEl.innerText = `${Math.round(data.current_weather.temperature)}°`;
+            } catch(e) { tempEl.innerText = "N/D"; }
         }
 
         function playSound(type) {
@@ -508,7 +516,6 @@
             quizActive = true; 
             showView('quiz');
             document.getElementById('q-score').innerText = score;
-            document.getElementById('q-best').innerText = bestScore;
             generateQuestion();
         }
 
@@ -550,7 +557,6 @@
                 msg.innerText = "+10 PUNTI!";
                 msg.className = "mt-6 font-bold italic text-emerald-400";
                 
-                // Effetto pulse su record se battuto
                 if (score > bestScore) {
                     document.getElementById('box-best').classList.add('pulse');
                     setTimeout(() => document.getElementById('box-best').classList.remove('pulse'), 500);
@@ -565,7 +571,6 @@
                         b.classList.add('bg-emerald-500/20', 'text-emerald-400');
                     }
                 });
-                // PENALITA' DI 40 PUNTI
                 score = Math.max(0, score - 40);
                 msg.innerText = "-40 PUNTI!";
                 msg.className = "mt-6 font-bold italic text-red-400";
@@ -584,13 +589,19 @@
         }
 
         function updateRecordDisplay() {
-            const displayMenu = document.getElementById('best-score-display');
-            if (displayMenu) displayMenu.innerText = `Record: ${bestScore}`;
-            const displayGame = document.getElementById('q-best');
-            if (displayGame) displayGame.innerText = bestScore;
+            const menuRecord = document.getElementById('best-score-display');
+            const gameRecord = document.getElementById('q-best');
+            if (menuRecord) menuRecord.innerText = `Record: ${bestScore}`;
+            if (gameRecord) gameRecord.innerText = bestScore;
         }
 
-        function startClock() { setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT'); }, 1000); }
+        function startClock() { 
+            const clockEl = document.getElementById('clock');
+            setInterval(() => { 
+                clockEl.innerText = new Date().toLocaleTimeString('it-IT'); 
+            }, 1000); 
+        }
+
         function filterItalia(v) { renderItalia(v); }
         function filterWorld(v) { renderWorld(v); }
 
