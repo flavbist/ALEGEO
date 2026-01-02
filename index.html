@@ -28,7 +28,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden; 
         }
 
         .bg-animate {
@@ -111,6 +111,17 @@
         
         #map { background: #020617; width: 100%; height: 100%; }
 
+        /* Estetica personalizzata per i controlli di Leaflet */
+        .leaflet-control-layers {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            border-radius: 12px !important;
+            font-family: inherit;
+        }
+        .leaflet-control-layers-list { padding: 5px; }
+
         .fade-in-up {
             animation: fadeInUp 0.5s ease-out forwards;
         }
@@ -134,7 +145,7 @@
 
     <div class="bg-animate"></div>
 
-    <div class="flex-1 flex items-center justify-center p-0 md:p-6">
+    <div class="flex-1 flex items-center justify-center p-0 md:p-6 h-screen">
         <div class="glass-panel max-w-7xl relative overflow-hidden w-full">
             
             <!-- Navbar -->
@@ -158,7 +169,7 @@
                 <div id="clock" class="hidden md:block text-xs font-mono bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 text-indigo-300">00:00:00</div>
             </header>
 
-            <main class="flex-1 overflow-hidden relative">
+            <main class="flex-1 overflow-hidden relative flex flex-col">
                 
                 <!-- HOME -->
                 <div id="view-home" class="h-full flex flex-col items-center justify-center text-center p-6 fade-in-up">
@@ -185,19 +196,19 @@
 
                 <!-- ITALIA -->
                 <div id="view-italia" class="hidden h-full flex flex-col p-6 fade-in-up">
-                    <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center justify-between mb-6 shrink-0">
                         <h2 class="text-2xl font-800 text-white">Regioni d'Italia</h2>
                         <input type="text" oninput="filterItalia(this.value)" placeholder="Cerca regione..." class="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-indigo-500 text-white w-48 md:w-64">
                     </div>
-                    <div id="it-list" class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto custom-scrollbar pr-2"></div>
+                    <div id="it-list" class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto custom-scrollbar pr-2 pb-6"></div>
                 </div>
 
                 <!-- ATLANTE -->
-                <div id="view-atlante" class="hidden h-full flex flex-col p-6 fade-in-up">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div id="view-atlante" class="hidden h-full flex flex-col p-6 fade-in-up overflow-hidden">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 shrink-0">
                         <div>
                             <h2 class="text-2xl font-800 text-white leading-tight">Atlante Mondiale</h2>
-                            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Scorri per scoprire le nazioni</p>
+                            <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Scorri tra tutte le nazioni</p>
                         </div>
                         <div class="relative">
                             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
@@ -205,7 +216,7 @@
                         </div>
                     </div>
                     
-                    <div id="world-grid" class="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 overflow-y-auto custom-scrollbar pr-4 pb-10">
+                    <div id="world-grid" class="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 overflow-y-auto custom-scrollbar pr-4 pb-12">
                         <div class="col-span-full py-20 text-center text-slate-500 animate-pulse">Caricamento nazioni...</div>
                     </div>
                 </div>
@@ -221,7 +232,7 @@
                     </div>
                 </div>
 
-                <!-- QUIZ GIOCO (Punteggio e Record Ripristinati) -->
+                <!-- QUIZ GIOCO -->
                 <div id="view-quiz" class="hidden h-full flex flex-col items-center justify-center p-6">
                     <div class="max-w-md w-full">
                         <div class="flex justify-between items-end mb-6">
@@ -271,10 +282,8 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
-
         <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
             <div id="map" class="flex-1 order-2 md:order-1"></div>
-            
             <div class="w-full md:w-80 p-6 bg-slate-900/50 order-1 md:order-2 border-l border-white/10 flex flex-col gap-6 overflow-y-auto custom-scrollbar">
                 <div class="space-y-4">
                     <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
@@ -299,14 +308,10 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="mt-auto space-y-3">
                     <a id="m-wiki-btn" href="#" target="_blank" class="flex items-center justify-center gap-3 bg-white text-slate-900 w-full py-4 rounded-2xl font-800 text-sm transition-transform active:scale-95 shadow-xl">
-                        <i class="fab fa-wikipedia-w"></i> LEGGI SU WIKIPEDIA
+                        <i class="fab fa-wikipedia-w"></i> WIKIPEDIA
                     </a>
-                    <button onclick="zoomToFeatures()" class="w-full py-3 rounded-2xl border border-white/10 text-white font-bold text-xs hover:bg-white/5 transition-all">
-                        ADATTA MAPPA
-                    </button>
                 </div>
             </div>
         </div>
@@ -320,6 +325,7 @@
         let map = null;
         let markers = L.layerGroup();
         let boundaries = null;
+        let layerControl = null;
         let currentCorrect = "";
         let audioCtx = null;
 
@@ -377,7 +383,6 @@
             });
             const target = document.getElementById('view-' + viewId);
             if (target) target.classList.remove('hidden');
-            
             if(viewId !== 'quiz') quizActive = false;
         }
 
@@ -420,11 +425,30 @@
 
         function initLeaflet() {
             if (!map) {
-                const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
-                const lbl = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png');
-                const hybrid = L.layerGroup([sat, lbl]);
-                map = L.map('map', { layers: [hybrid], zoomControl: false, attributionControl: false });
+                // Layer definition
+                const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
+                const streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+                const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png');
+                
+                map = L.map('map', { 
+                    layers: [satellite, labels], 
+                    zoomControl: false, 
+                    attributionControl: false 
+                });
+
                 markers.addTo(map);
+
+                const baseLayers = {
+                    "Satellite": satellite,
+                    "Strade": streets
+                };
+
+                const overlays = {
+                    "Etichette": labels,
+                    "Marcatori": markers
+                };
+
+                layerControl = L.control.layers(baseLayers, overlays, { collapsed: false }).addTo(map);
             }
             if (boundaries) map.removeLayer(boundaries);
             setTimeout(() => map.invalidateSize(), 100);
@@ -446,7 +470,6 @@
             initLeaflet();
             markers.clearLayers();
             L.marker([c.capLat, c.capLng], { icon: L.divIcon({className: 'marker-pin'}) }).addTo(markers);
-            
             try {
                 const res = await fetch(`https://raw.githubusercontent.com/johan/world.geo.json/master/countries/${c.id}.geo.json`);
                 if(res.ok) {
@@ -464,14 +487,11 @@
             document.getElementById('m-pop').innerText = p;
             document.getElementById('m-curr').innerText = curr;
             document.getElementById('m-wiki-btn').href = `https://it.wikipedia.org/wiki/${encodeURIComponent(n)}`;
-
             const flagImg = document.getElementById('m-flag');
             if(f) { flagImg.src = f; flagImg.classList.remove('hidden'); } else { flagImg.classList.add('hidden'); }
         }
 
         function closeMap() { document.getElementById('map-modal').classList.add('hidden'); }
-        function zoomToFeatures() { if (boundaries) map.fitBounds(boundaries.getBounds()); }
-
         async function getWeather(lat, lng) {
             try {
                 const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`);
@@ -480,7 +500,6 @@
             } catch(e) { document.getElementById('m-temp').innerText = "--°"; }
         }
 
-        // QUIZ LOGIC
         function playSound(type) {
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -488,7 +507,6 @@
                 const gain = audioCtx.createGain();
                 osc.connect(gain); gain.connect(audioCtx.destination);
                 const now = audioCtx.currentTime;
-
                 if (type === 'correct') {
                     osc.frequency.setValueAtTime(523, now);
                     osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
@@ -505,9 +523,7 @@
         }
 
         function startQuiz() {
-            score = 0; 
-            quizActive = true; 
-            showView('quiz');
+            score = 0; quizActive = true; showView('quiz');
             document.getElementById('q-score').innerText = score;
             document.getElementById('q-best').innerText = bestScore;
             generateQuestion();
@@ -517,23 +533,19 @@
             if (!quizActive) return;
             const msg = document.getElementById('quiz-msg');
             msg.style.opacity = "0";
-            
             const c = countries[Math.floor(Math.random() * countries.length)];
             currentCorrect = c.capital;
             document.getElementById('q-flag').src = c.flag;
             document.getElementById('q-country').innerText = c.name;
-
             let opts = [currentCorrect];
             while(opts.length < 4) {
                 let r = countries[Math.floor(Math.random() * countries.length)].capital;
                 if (!opts.includes(r)) opts.push(r);
             }
             opts.sort(() => Math.random() - 0.5);
-
             document.getElementById('q-options').innerHTML = opts.map(o => `
-                <button onclick="checkAnswer(this, '${o.replace(/'/g, "\\'")}')" class="bg-white/5 border border-white/10 p-4 rounded-xl font-bold hover:bg-white/10 transition-all text-white text-sm text-left flex justify-between items-center group">
-                    <span>${o}</span>
-                    <i class="fas fa-chevron-right text-slate-700 opacity-0 group-hover:opacity-100 transition-all"></i>
+                <button onclick="checkAnswer(this, '${o.replace(/'/g, "\\'")}')" class="bg-white/5 border border-white/10 p-4 rounded-xl font-bold hover:bg-white/10 transition-all text-white text-sm text-left">
+                    ${o}
                 </button>
             `).join('');
         }
@@ -541,10 +553,7 @@
         function checkAnswer(btn, val) {
             const msg = document.getElementById('quiz-msg');
             const btns = document.querySelectorAll('#q-options button');
-            
-            // Disabilita altri bottoni per prevenire click multipli durante il feedback
             btns.forEach(b => b.onclick = null);
-
             if (val === currentCorrect) {
                 playSound('correct');
                 btn.classList.add('!bg-emerald-500/20', '!border-emerald-500', 'text-emerald-400');
@@ -554,27 +563,18 @@
             } else {
                 playSound('wrong');
                 btn.classList.add('!bg-red-500/20', '!border-red-500', 'text-red-400');
-                // Evidenzia quella corretta
-                btns.forEach(b => {
-                    if(b.innerText.trim() === currentCorrect) {
-                        b.classList.add('!border-emerald-500/50', 'text-emerald-500/50');
-                    }
-                });
                 score = Math.max(0, score - 5);
-                msg.innerText = `Errore. La risposta era ${currentCorrect}`;
+                msg.innerText = `Errore. Era ${currentCorrect}`;
                 msg.className = "mt-6 font-bold italic text-red-400";
             }
-            
             msg.style.opacity = "1";
             document.getElementById('q-score').innerText = score;
-            
             if (score > bestScore) {
                 bestScore = score;
                 localStorage.setItem('alegeo_best', bestScore);
                 document.getElementById('q-best').innerText = bestScore;
                 updateRecordDisplay();
             }
-            
             setTimeout(() => { if(quizActive) generateQuestion(); }, 1600);
         }
 
@@ -584,7 +584,6 @@
         }
 
         function startClock() { setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT'); }, 1000); }
-
         window.onload = init;
     </script>
 </body>
