@@ -198,30 +198,41 @@
 
         <!-- Modal Mappa & Dettagli -->
         <div id="detail-modal" class="modal-overlay">
-            <div class="bg-white w-full max-w-4xl rounded-[40px] overflow-hidden shadow-2xl relative flex flex-col">
+            <div class="bg-white w-full max-w-4xl rounded-[40px] overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
                 <button onclick="closeModal()" class="absolute top-4 right-4 z-[110] bg-white/90 p-3 rounded-full shadow-lg hover:scale-110 transition">
                     <i class="fas fa-times text-slate-900"></i>
                 </button>
                 
                 <div id="map-canvas"></div>
 
-                <div class="p-8 bg-white border-t flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="p-8 bg-white border-t flex flex-col md:flex-row justify-between items-center gap-6 overflow-y-auto">
                     <div class="flex items-center gap-6">
                         <img id="m-flag" src="" class="w-20 h-14 object-cover rounded-lg shadow-sm border border-slate-100">
                         <div>
-                            <h2 id="m-country" class="text-3xl font-800 text-slate-900 leading-none">-</h2>
+                            <div class="flex items-center gap-3">
+                                <h2 id="m-country" class="text-3xl font-800 text-slate-900 leading-none">-</h2>
+                                <a id="m-wiki" href="#" target="_blank" class="text-slate-300 hover:text-indigo-600 transition-colors" title="Apri Wikipedia">
+                                    <i class="fab fa-wikipedia-w text-xl"></i>
+                                </a>
+                            </div>
                             <p id="m-capital" class="text-lg text-slate-400 font-bold mt-1">-</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-slate-50 px-4 py-2 rounded-xl text-center">
-                            <p class="text-[10px] text-slate-400 uppercase font-black">Popolazione</p>
-                            <p id="m-pop" class="font-bold text-slate-700">-</p>
+                    
+                    <div class="flex flex-col sm:flex-row items-center gap-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-slate-50 px-4 py-2 rounded-xl text-center min-w-[100px]">
+                                <p class="text-[10px] text-slate-400 uppercase font-black">Popolazione</p>
+                                <p id="m-pop" class="font-bold text-slate-700">-</p>
+                            </div>
+                            <div class="bg-slate-50 px-4 py-2 rounded-xl text-center min-w-[100px]">
+                                <p class="text-[10px] text-slate-400 uppercase font-black">Valuta</p>
+                                <p id="m-curr" class="font-bold text-slate-700">-</p>
+                            </div>
                         </div>
-                        <div class="bg-slate-50 px-4 py-2 rounded-xl text-center">
-                            <p class="text-[10px] text-slate-400 uppercase font-black">Valuta</p>
-                            <p id="m-curr" class="font-bold text-slate-700">-</p>
-                        </div>
+                        <a id="m-wiki-btn" href="#" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-indigo-100">
+                            <i class="fas fa-external-link-alt text-sm"></i> Approfondisci
+                        </a>
                     </div>
                 </div>
             </div>
@@ -254,7 +265,7 @@
                         lon: country.latlng?.[1] || 0,
                         iso: country.cca2,
                         flag: country.flags?.svg || "",
-                        pop: country.population ? country.population.toLocaleString() : "0",
+                        pop: country.population ? country.population.toLocaleString('it-IT') : "0",
                         curr: currencyName
                     };
                 }).sort((a,b) => a.name.localeCompare(b.name));
@@ -328,11 +339,17 @@
 
         function openMap(state) {
             const modal = document.getElementById('detail-modal');
+            const wikiUrl = `https://it.wikipedia.org/wiki/${encodeURIComponent(state.name)}`;
+            
             document.getElementById('m-country').innerText = state.name;
             document.getElementById('m-capital').innerText = state.cap;
             document.getElementById('m-flag').src = state.flag;
             document.getElementById('m-pop').innerText = state.pop;
             document.getElementById('m-curr').innerText = state.curr;
+            
+            // Imposta i link Wikipedia
+            document.getElementById('m-wiki').href = wikiUrl;
+            document.getElementById('m-wiki-btn').href = wikiUrl;
             
             modal.classList.add('active');
 
