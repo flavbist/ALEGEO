@@ -95,32 +95,16 @@
             transition: transform 0.5s ease;
         }
 
-        .card-modern:hover .flag-img {
-            transform: scale(1.1);
-        }
-
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
-
+        
         .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             transition: transform 0.2s, filter 0.2s;
         }
         
         #map { background: #020617; width: 100%; height: 100%; }
-
-        /* Estetica personalizzata per i controlli di Leaflet */
-        .leaflet-control-layers {
-            background: rgba(15, 23, 42, 0.8) !important;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            color: white !important;
-            border-radius: 12px !important;
-            font-family: inherit;
-        }
-        .leaflet-control-layers-list { padding: 5px; }
 
         .fade-in-up {
             animation: fadeInUp 0.5s ease-out forwards;
@@ -138,6 +122,46 @@
             border: 2px solid white;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             background: #f59e0b;
+        }
+
+        /* Nuovi stili per Score e Record a lato */
+        .quiz-stats-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .stat-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            min-width: 120px;
+            backdrop-filter: blur(10px);
+        }
+
+        @media (max-width: 1024px) {
+            .quiz-stats-container {
+                flex-direction: column;
+                position: relative;
+                top: 0;
+                left: 0;
+                transform: none;
+                margin: 20px auto;
+            }
+            .stat-side {
+                display: flex;
+                gap: 10px;
+                order: -1;
+            }
         }
     </style>
 </head>
@@ -173,24 +197,13 @@
                 
                 <!-- HOME -->
                 <div id="view-home" class="h-full flex flex-col items-center justify-center text-center p-6 fade-in-up">
-                    <h2 class="text-4xl md:text-6xl font-800 mb-4 bg-gradient-to-r from-white to-indigo-400 bg-clip-text text-transparent">
-                        Esplora il Mondo.
-                    </h2>
+                    <h2 class="text-4xl md:text-6xl font-800 mb-4 bg-gradient-to-r from-white to-indigo-400 bg-clip-text text-transparent">Esplora il Mondo.</h2>
                     <p class="text-slate-400 max-w-md mb-8">Un atlante interattivo completo con dati in tempo reale e quiz survival.</p>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
-                        <div onclick="showView('italia')" class="card-modern p-6 cursor-pointer">
-                            <i class="fas fa-map-marked-alt text-3xl text-emerald-400 mb-4 block"></i>
-                            <h3 class="font-bold text-white">Italia</h3>
-                        </div>
-                        <div onclick="showView('atlante')" class="card-modern p-6 cursor-pointer border-indigo-500/50 bg-indigo-500/5">
-                            <i class="fas fa-atlas text-3xl text-indigo-400 mb-4 block"></i>
-                            <h3 class="font-bold text-white">Atlante</h3>
-                        </div>
-                        <div onclick="showView('quiz-menu')" class="card-modern p-6 cursor-pointer">
-                            <i class="fas fa-vial text-3xl text-amber-400 mb-4 block"></i>
-                            <h3 class="font-bold text-white">Quiz</h3>
-                        </div>
+                        <div onclick="showView('italia')" class="card-modern p-6 cursor-pointer"><i class="fas fa-map-marked-alt text-3xl text-emerald-400 mb-4 block"></i><h3 class="font-bold text-white">Italia</h3></div>
+                        <div onclick="showView('atlante')" class="card-modern p-6 cursor-pointer border-indigo-500/50 bg-indigo-500/5"><i class="fas fa-atlas text-3xl text-indigo-400 mb-4 block"></i><h3 class="font-bold text-white">Atlante</h3></div>
+                        <div onclick="showView('quiz-menu')" class="card-modern p-6 cursor-pointer"><i class="fas fa-vial text-3xl text-amber-400 mb-4 block"></i><h3 class="font-bold text-white">Quiz</h3></div>
                     </div>
                 </div>
 
@@ -215,10 +228,7 @@
                             <input type="text" oninput="filterWorld(this.value)" placeholder="Cerca nazione..." class="bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-indigo-500 text-white w-full md:w-80">
                         </div>
                     </div>
-                    
-                    <div id="world-grid" class="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 overflow-y-auto custom-scrollbar pr-4 pb-12">
-                        <div class="col-span-full py-20 text-center text-slate-500 animate-pulse">Caricamento nazioni...</div>
-                    </div>
+                    <div id="world-grid" class="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 overflow-y-auto custom-scrollbar pr-4 pb-12"></div>
                 </div>
 
                 <!-- QUIZ MENU -->
@@ -233,34 +243,40 @@
                 </div>
 
                 <!-- QUIZ GIOCO -->
-                <div id="view-quiz" class="hidden h-full flex flex-col items-center justify-center p-6">
-                    <div class="max-w-md w-full">
-                        <div class="flex justify-between items-end mb-6">
-                            <div>
-                                <span class="text-indigo-400 font-bold text-[10px] uppercase tracking-widest block mb-1">Punteggio Attuale</span>
-                                <span id="q-score" class="text-2xl font-800 text-white">0</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-amber-500 font-bold text-[10px] uppercase tracking-widest block mb-1">Miglior Record</span>
-                                <span id="q-best" class="text-lg font-bold text-amber-500/80">0</span>
-                            </div>
-                        </div>
+                <div id="view-quiz" class="hidden h-full overflow-y-auto custom-scrollbar">
+                    <div class="quiz-stats-container">
                         
-                        <div class="card-modern p-8 text-center fade-in-up border-white/10">
-                            <div class="flag-container max-w-[200px] mx-auto shadow-2xl mb-6">
-                                <img id="q-flag" src="" class="flag-img">
-                            </div>
-                            <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-2">Qual è la capitale di:</p>
-                            <h3 id="q-country" class="text-2xl font-800 mb-8 text-white">-</h3>
-                            
-                            <div id="q-options" class="grid grid-cols-1 gap-3"></div>
-                            
-                            <div id="quiz-msg" class="mt-6 font-bold italic opacity-0 transition-opacity text-sm h-5">Messaggio</div>
+                        <!-- SCORE SINISTRA -->
+                        <div class="stat-box order-1 md:order-none">
+                            <span class="text-[10px] uppercase font-800 text-indigo-400 tracking-widest block mb-1">Score</span>
+                            <span id="q-score" class="text-4xl font-900 text-white">0</span>
                         </div>
-                        
-                        <button onclick="showView('quiz-menu')" class="mt-8 w-full text-slate-500 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors">
-                            <i class="fas fa-times mr-2"></i> Esci dal quiz
-                        </button>
+
+                        <!-- CORE QUIZ -->
+                        <div class="max-w-md w-full order-3 md:order-none px-4 py-10">
+                            <div class="card-modern p-8 text-center fade-in-up border-white/10 shadow-2xl relative overflow-hidden">
+                                <div class="flag-container max-w-[180px] mx-auto shadow-2xl mb-6">
+                                    <img id="q-flag" src="" class="flag-img">
+                                </div>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-2">Seleziona la capitale di:</p>
+                                <h3 id="q-country" class="text-2xl font-800 mb-8 text-white">-</h3>
+                                
+                                <div id="q-options" class="grid grid-cols-1 gap-3"></div>
+                                
+                                <div id="quiz-msg" class="mt-6 font-bold italic opacity-0 transition-opacity text-sm h-5">Messaggio</div>
+                            </div>
+                            
+                            <button onclick="showView('quiz-menu')" class="mt-8 w-full text-slate-500 text-[10px] font-extrabold uppercase tracking-widest hover:text-white transition-colors">
+                                <i class="fas fa-arrow-left mr-2"></i> Torna al menu
+                            </button>
+                        </div>
+
+                        <!-- RECORD DESTRA -->
+                        <div class="stat-box order-2 md:order-none border-amber-500/30 bg-amber-500/5">
+                            <span class="text-[10px] uppercase font-800 text-amber-500 tracking-widest block mb-1">Record</span>
+                            <span id="q-best" class="text-4xl font-900 text-amber-500">0</span>
+                        </div>
+
                     </div>
                 </div>
 
@@ -268,19 +284,17 @@
         </div>
     </div>
 
-    <!-- Modal Mappa -->
+    <!-- Modal Mappa (Invariato) -->
     <div id="map-modal" class="fixed inset-0 z-[2000] hidden bg-slate-950/98 backdrop-blur-2xl flex flex-col">
         <div class="flex items-center justify-between p-5 border-b border-white/10">
             <div class="flex items-center gap-4">
                 <img id="m-flag" src="" class="w-12 h-8 rounded shadow-lg border border-white/10 hidden object-cover">
                 <div>
                     <h3 id="m-name" class="text-xl font-800 text-white">Nome</h3>
-                    <p id="m-sub" class="text-xs text-indigo-400 font-bold uppercase tracking-tighter">Dettagli</p>
+                    <p id="m-sub" class="text-xs text-indigo-400 font-bold uppercase">Dettagli</p>
                 </div>
             </div>
-            <button onclick="closeMap()" class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white text-xl transition-all">
-                <i class="fas fa-times"></i>
-            </button>
+            <button onclick="closeMap()" class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white text-xl transition-all"><i class="fas fa-times"></i></button>
         </div>
         <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
             <div id="map" class="flex-1 order-2 md:order-1"></div>
@@ -288,31 +302,18 @@
                 <div class="space-y-4">
                     <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
                         <span class="text-[10px] uppercase font-bold text-slate-500 block mb-1">Popolazione</span>
-                        <div class="flex items-center justify-between">
-                            <span id="m-pop" class="text-lg font-bold text-white">-</span>
-                            <i class="fas fa-users text-indigo-400"></i>
-                        </div>
+                        <div class="flex items-center justify-between"><span id="m-pop" class="text-lg font-bold text-white">-</span><i class="fas fa-users text-indigo-400"></i></div>
                     </div>
                     <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
                         <span class="text-[10px] uppercase font-bold text-slate-500 block mb-1">Valuta</span>
-                        <div class="flex items-center justify-between">
-                            <span id="m-curr" class="text-lg font-bold text-white">-</span>
-                            <i class="fas fa-coins text-amber-400"></i>
-                        </div>
+                        <div class="flex items-center justify-between"><span id="m-curr" class="text-lg font-bold text-white">-</span><i class="fas fa-coins text-amber-400"></i></div>
                     </div>
                     <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
                         <span class="text-[10px] uppercase font-bold text-slate-500 block mb-1">Meteo Locale</span>
-                        <div class="flex items-center justify-between">
-                            <span id="m-temp" class="text-2xl font-800 text-indigo-300">--°</span>
-                            <i class="fas fa-cloud-sun text-slate-400 text-xl"></i>
-                        </div>
+                        <div class="flex items-center justify-between"><span id="m-temp" class="text-2xl font-800 text-indigo-300">--°</span><i class="fas fa-cloud-sun text-slate-400 text-xl"></i></div>
                     </div>
                 </div>
-                <div class="mt-auto space-y-3">
-                    <a id="m-wiki-btn" href="#" target="_blank" class="flex items-center justify-center gap-3 bg-white text-slate-900 w-full py-4 rounded-2xl font-800 text-sm transition-transform active:scale-95 shadow-xl">
-                        <i class="fab fa-wikipedia-w"></i> WIKIPEDIA
-                    </a>
-                </div>
+                <div class="mt-auto"><a id="m-wiki-btn" href="#" target="_blank" class="flex items-center justify-center gap-3 bg-white text-slate-900 w-full py-4 rounded-2xl font-800 text-sm shadow-xl"><i class="fab fa-wikipedia-w"></i> WIKIPEDIA</a></div>
             </div>
         </div>
     </div>
@@ -325,7 +326,6 @@
         let map = null;
         let markers = L.layerGroup();
         let boundaries = null;
-        let layerControl = null;
         let currentCorrect = "";
         let audioCtx = null;
 
@@ -354,6 +354,8 @@
 
         async function init() {
             try {
+                updateRecordDisplay();
+
                 const res = await fetch('https://restcountries.com/v3.1/all?fields=name,capital,flags,latlng,translations,cca3,capitalInfo,population,currencies');
                 const data = await res.json();
                 countries = data.filter(c => c.capital && c.capital[0]).map(c => ({
@@ -372,7 +374,6 @@
                 renderItalia();
                 renderWorld();
                 startClock();
-                updateRecordDisplay();
             } catch (err) { console.error(err); }
         }
 
@@ -383,17 +384,20 @@
             });
             const target = document.getElementById('view-' + viewId);
             if (target) target.classList.remove('hidden');
-            if(viewId !== 'quiz') quizActive = false;
+            
+            if(viewId !== 'quiz') {
+                quizActive = false;
+            } else {
+                quizActive = true;
+                updateRecordDisplay();
+            }
         }
 
         function renderItalia(f = "") {
             const list = document.getElementById('it-list');
             list.innerHTML = regioniItalia.filter(r => r.name.toLowerCase().includes(f.toLowerCase())).map(r => `
                 <div onclick="openMapItalia('${r.name.replace(/'/g, "\\'")}')" class="card-modern p-5 cursor-pointer flex justify-between items-center group">
-                    <div>
-                        <h4 class="font-bold text-white">${r.name}</h4>
-                        <p class="text-[10px] text-indigo-400 font-bold uppercase">${r.capital}</p>
-                    </div>
+                    <div><h4 class="font-bold text-white">${r.name}</h4><p class="text-[10px] text-indigo-400 font-bold uppercase">${r.capital}</p></div>
                     <i class="fas fa-chevron-right text-slate-700 group-hover:text-indigo-400 transition-colors"></i>
                 </div>
             `).join('');
@@ -404,19 +408,11 @@
         function renderWorld(f = "") {
             const grid = document.getElementById('world-grid');
             const filtered = countries.filter(c => c.name.toLowerCase().includes(f.toLowerCase()));
-            
-            if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-20 text-center text-slate-500">Nessuna nazione trovata.</div>`;
-                return;
-            }
-
             grid.innerHTML = filtered.map(c => `
                 <div onclick="openMapWorld('${c.id}')" class="card-modern p-4 cursor-pointer group fade-in-up">
-                    <div class="flag-container">
-                        <img src="${c.flag}" class="flag-img" loading="lazy">
-                    </div>
+                    <div class="flag-container"><img src="${c.flag}" class="flag-img" loading="lazy"></div>
                     <h4 class="text-sm font-bold text-white truncate group-hover:text-indigo-400 transition-colors">${c.name}</h4>
-                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">${c.capital}</p>
+                    <p class="text-[9px] text-slate-500 font-bold uppercase mt-1">${c.capital}</p>
                 </div>
             `).join('');
         }
@@ -425,30 +421,13 @@
 
         function initLeaflet() {
             if (!map) {
-                // Layer definition
                 const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
                 const streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
                 const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png');
                 
-                map = L.map('map', { 
-                    layers: [satellite, labels], 
-                    zoomControl: false, 
-                    attributionControl: false 
-                });
-
+                map = L.map('map', { layers: [satellite, labels], zoomControl: false, attributionControl: false });
                 markers.addTo(map);
-
-                const baseLayers = {
-                    "Satellite": satellite,
-                    "Strade": streets
-                };
-
-                const overlays = {
-                    "Etichette": labels,
-                    "Marcatori": markers
-                };
-
-                layerControl = L.control.layers(baseLayers, overlays, { collapsed: false }).addTo(map);
+                L.control.layers({"Satellite": satellite, "Strade": streets}, {"Etichette": labels, "Marcatori": markers}, { collapsed: false }).addTo(map);
             }
             if (boundaries) map.removeLayer(boundaries);
             setTimeout(() => map.invalidateSize(), 100);
@@ -456,7 +435,7 @@
 
         function openMapItalia(name) {
             const r = regioniItalia.find(x => x.name === name);
-            setupMapUI(r.name, `Capoluogo: ${r.capital}`, null, "Varie", "Euro");
+            setupMapUI(r.name, `Capoluogo: ${r.capital}`, null, "N/A", "Euro");
             initLeaflet();
             markers.clearLayers();
             L.marker([r.lat, r.lng], { icon: L.divIcon({className: 'marker-pin'}) }).addTo(markers);
@@ -523,7 +502,9 @@
         }
 
         function startQuiz() {
-            score = 0; quizActive = true; showView('quiz');
+            score = 0; 
+            quizActive = true; 
+            showView('quiz');
             document.getElementById('q-score').innerText = score;
             document.getElementById('q-best').innerText = bestScore;
             generateQuestion();
@@ -533,18 +514,22 @@
             if (!quizActive) return;
             const msg = document.getElementById('quiz-msg');
             msg.style.opacity = "0";
+            
             const c = countries[Math.floor(Math.random() * countries.length)];
             currentCorrect = c.capital;
+            
             document.getElementById('q-flag').src = c.flag;
             document.getElementById('q-country').innerText = c.name;
+            
             let opts = [currentCorrect];
             while(opts.length < 4) {
                 let r = countries[Math.floor(Math.random() * countries.length)].capital;
                 if (!opts.includes(r)) opts.push(r);
             }
             opts.sort(() => Math.random() - 0.5);
+            
             document.getElementById('q-options').innerHTML = opts.map(o => `
-                <button onclick="checkAnswer(this, '${o.replace(/'/g, "\\'")}')" class="bg-white/5 border border-white/10 p-4 rounded-xl font-bold hover:bg-white/10 transition-all text-white text-sm text-left">
+                <button data-val="${o.replace(/'/g, "\\'")}" onclick="checkAnswer(this, '${o.replace(/'/g, "\\'")}')" class="bg-white/5 border border-white/10 p-4 rounded-xl font-bold hover:bg-white/10 transition-all text-white text-sm text-left">
                     ${o}
                 </button>
             `).join('');
@@ -554,33 +539,46 @@
             const msg = document.getElementById('quiz-msg');
             const btns = document.querySelectorAll('#q-options button');
             btns.forEach(b => b.onclick = null);
+
             if (val === currentCorrect) {
                 playSound('correct');
-                btn.classList.add('!bg-emerald-500/20', '!border-emerald-500', 'text-emerald-400');
+                btn.classList.replace('border-white/10', 'border-emerald-500');
+                btn.classList.add('bg-emerald-500/20', 'text-emerald-400');
                 score += 10;
-                msg.innerText = "Ottimo! +10 punti";
+                msg.innerText = "CORRETTO!";
                 msg.className = "mt-6 font-bold italic text-emerald-400";
             } else {
                 playSound('wrong');
-                btn.classList.add('!bg-red-500/20', '!border-red-500', 'text-red-400');
+                btn.classList.replace('border-white/10', 'border-red-500');
+                btn.classList.add('bg-red-500/20', 'text-red-400');
+                btns.forEach(b => {
+                    if(b.getAttribute('data-val') === currentCorrect) {
+                        b.classList.replace('border-white/10', 'border-emerald-500');
+                        b.classList.add('bg-emerald-500/20', 'text-emerald-400');
+                    }
+                });
                 score = Math.max(0, score - 5);
-                msg.innerText = `Errore. Era ${currentCorrect}`;
+                msg.innerText = "SBAGLIATO!";
                 msg.className = "mt-6 font-bold italic text-red-400";
             }
-            msg.style.opacity = "1";
+
             document.getElementById('q-score').innerText = score;
+            msg.style.opacity = "1";
+            
             if (score > bestScore) {
                 bestScore = score;
                 localStorage.setItem('alegeo_best', bestScore);
-                document.getElementById('q-best').innerText = bestScore;
                 updateRecordDisplay();
             }
-            setTimeout(() => { if(quizActive) generateQuestion(); }, 1600);
+
+            setTimeout(() => { if(quizActive) generateQuestion(); }, 1800);
         }
 
         function updateRecordDisplay() {
-            const display = document.getElementById('best-score-display');
-            if (display) display.innerText = `Record: ${bestScore}`;
+            const displayMenu = document.getElementById('best-score-display');
+            if (displayMenu) displayMenu.innerText = `Record: ${bestScore}`;
+            const displayGame = document.getElementById('q-best');
+            if (displayGame) displayGame.innerText = bestScore;
         }
 
         function startClock() { setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT'); }, 1000); }
