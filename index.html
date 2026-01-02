@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALEGEO - Esplora il Mondo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Yandex Maps API -->
+    <script src="https://api-maps.yandex.ru/2.1/?lang=it_IT" type="text/javascript"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .main-container {
+            background: #ffffff;
+            border-radius: 32px;
+            width: 100%;
+            max-width: 1100px;
+            height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            color: #1e293b;
+            position: relative;
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        }
+
+        .study-card {
+            transition: all 0.3s ease;
+            border: 1px solid #f1f5f9;
+            background: #ffffff;
+            border-radius: 24px;
+        }
+
+        .study-card:hover {
+            transform: translateY(-5px);
+            border-color: #6366f1;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        /* Modal system */
+        .modal-overlay {
+            backdrop-filter: blur(8px);
+            background: rgba(15, 23, 42, 0.7);
+            display: none;
+            position: absolute;
+            inset: 0;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #detail-modal { z-index: 100; }
+        #info-modal { z-index: 110; }
+        #state-info-panel { z-index: 150; }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        #map-canvas {
+            width: 100%;
+            height: 400px;
+            background: #f1f5f9;
+        }
+
+        .loader-overlay {
+            position: absolute;
+            inset: 0;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #6366f1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container shadow-2xl">
+        <!-- Header -->
+        <header class="p-6 border-b flex justify-between items-center bg-white z-20">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="goHome()">
+                <div class="btn-gradient p-2 rounded-xl shadow-lg">
+                    <i class="fas fa-globe-americas text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-800 tracking-tight leading-none">ALE<span class="text-indigo-600">GEO</span></h1>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mappa Dinamica</p>
+                </div>
+            </div>
+            <div id="quiz-ui" class="hidden flex items-center gap-4">
+                <div class="bg-indigo-50 px-4 py-2 rounded-full border border-indigo-100 flex items-center gap-2">
+                    <i class="fas fa-star text-indigo-500 text-xs"></i>
+                    <span id="score-count" class="font-bold text-indigo-700">0</span>
+                </div>
+                <button onclick="goHome()" class="text-slate-400 hover:text-slate-600 transition-colors"><i class="fas fa-times-circle text-2xl"></i></button>
+            </div>
+        </header>
+
+        <!-- Viewport -->
+        <div id="view-port" class="flex-1 overflow-y-auto p-6 bg-slate-50/50">
+            
+            <!-- Home View -->
+            <div id="home-view" class="max-w-3xl mx-auto text-center py-10">
+                <h2 class="text-5xl font-800 text-slate-900 mb-6 leading-tight">Esplora il pianeta <br><span class="text-indigo-600">punto per punto.</span></h2>
+                <p class="text-slate-500 text-lg mb-12">Tutti gli stati con mappe interattive Yandex, zoomabili e con i confini politici evidenziati.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <button onclick="showAtlante()" class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 transition-colors">
+                            <i class="fas fa-map-marked-alt text-indigo-600 group-hover:text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-800 mb-2">Atlante Interattivo</h3>
+                        <p class="text-slate-500 text-sm">Visualizza confini, capitali e territori di ogni nazione.</p>
+                    </button>
+                    
+                    <button onclick="startQuiz()" class="bg-indigo-600 p-8 rounded-[32px] shadow-lg hover:shadow-indigo-200 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
+                            <i class="fas fa-question-circle text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-800 text-white mb-2">Sfida Capitali</h3>
+                        <p class="text-indigo-100 text-sm">Metti alla prova la tua memoria geografica.</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Atlante View -->
+            <div id="atlante-view" class="hidden">
+                <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                    <div class="flex gap-2">
+                        <button onclick="goHome()" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 transition-all flex items-center justify-center gap-2 font-bold whitespace-nowrap">
+                            <i class="fas fa-home"></i>
+                            <span class="hidden sm:inline">Home</span>
+                        </button>
+                        <button onclick="openInfo()" class="bg-indigo-50 p-5 rounded-2xl shadow-sm border border-indigo-100 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-2 font-bold">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="hidden sm:inline">Guida App</span>
+                        </button>
+                    </div>
+                    <div class="relative flex-1">
+                        <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                        <input type="text" id="search-bar" oninput="filterList()" placeholder="Cerca uno stato o una capitale..." 
+                               class="w-full pl-14 pr-5 py-5 rounded-2xl border-2 border-transparent focus:border-indigo-500 outline-none bg-white shadow-sm text-lg font-medium">
+                    </div>
+                </div>
+                <div id="states-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+
+            <!-- Quiz View -->
+            <div id="quiz-view" class="hidden max-w-xl mx-auto py-10 text-center">
+                <span class="text-indigo-500 font-bold uppercase tracking-widest text-xs">Qual è la capitale di:</span>
+                <h2 id="q-country" class="text-5xl font-800 text-slate-900 mt-2 mb-10 tracking-tighter">-</h2>
+                <div id="q-options" class="grid gap-4"></div>
+            </div>
+
+        </div>
+
+        <!-- Info Modal (Guida Generale) -->
+        <div id="info-modal" class="modal-overlay">
+            <div class="bg-white w-full max-w-2xl rounded-[40px] overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+                <div class="p-8 border-b flex justify-between items-center">
+                    <h2 class="text-2xl font-800 text-slate-900">Guida all'Uso</h2>
+                    <button onclick="closeInfo()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times-circle text-2xl"></i></button>
+                </div>
+                <div class="p-8 overflow-y-auto custom-scroll">
+                    <div class="space-y-8">
+                        <div class="flex gap-4">
+                            <i class="fas fa-map text-indigo-500 text-xl mt-1"></i>
+                            <div>
+                                <h4 class="font-bold">Esplorazione</h4>
+                                <p class="text-sm text-slate-500">Seleziona una nazione per visualizzarne i confini e accedere alle schede informative dettagliate.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <i class="fas fa-info-circle text-indigo-500 text-xl mt-1"></i>
+                            <div>
+                                <h4 class="font-bold">Dettagli Stato</h4>
+                                <p class="text-sm text-slate-500">In ogni mappa troverai un tasto "Scopri di più" per leggere la storia e vedere foto reali del paese.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- State Detail Info Panel -->
+        <div id="state-info-panel" class="modal-overlay">
+            <div class="bg-white w-full max-w-3xl rounded-[40px] overflow-hidden shadow-2xl flex flex-col max-h-[90vh] relative animate-in fade-in zoom-in duration-300">
+                <button onclick="closeStateInfo()" class="absolute top-6 right-6 z-[200] bg-white/90 p-3 rounded-full shadow hover:bg-white transition-all">
+                    <i class="fas fa-times text-slate-900"></i>
+                </button>
+                
+                <div id="si-hero" class="h-64 bg-slate-200 relative">
+                    <img id="si-img" src="" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                    <div class="absolute bottom-8 left-8 text-white">
+                        <h2 id="si-name" class="text-5xl font-800">Nome Stato</h2>
+                        <p id="si-cap" class="text-xl font-medium opacity-90 italic">Capitale</p>
+                    </div>
+                </div>
+
+                <div class="p-8 overflow-y-auto custom-scroll grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="md:col-span-2 space-y-6">
+                        <div>
+                            <h4 class="text-indigo-600 font-black uppercase text-xs tracking-widest mb-2">Profilo del Paese</h4>
+                            <p id="si-desc" class="text-slate-600 leading-relaxed italic">Caricamento descrizione...</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Popolazione</span>
+                                <p id="si-pop" class="text-lg font-bold text-slate-800">-</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Valuta</span>
+                                <p id="si-curr" class="text-lg font-bold text-slate-800">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h4 class="text-slate-900 font-bold">Paesaggio tipico</h4>
+                        <img id="si-img-2" src="" class="w-full aspect-square object-cover rounded-2xl shadow-sm border border-slate-100" alt="[Immagine paesaggio]">
+                        <div class="bg-indigo-50 p-4 rounded-2xl">
+                            <p class="text-xs text-indigo-700 font-medium italic">Curiosità: <span id="si-fact" class="font-normal text-slate-600">...</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Mappa Principale -->
+        <div id="detail-modal" class="modal-overlay">
+            <div class="bg-white w-full max-w-4xl rounded-[40px] overflow-hidden shadow-2xl relative">
+                <button onclick="closeModal()" class="absolute top-4 right-4 z-[110] bg-white/90 p-3 rounded-full shadow-lg hover:scale-110 transition">
+                    <i class="fas fa-times text-slate-900"></i>
+                </button>
+                
+                <div id="map-canvas">
+                    <div id="map-loader" class="loader-overlay">
+                        <div class="spinner mb-4"></div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Caricamento Confini...</p>
+                    </div>
+                </div>
+
+                <div class="p-8 bg-white flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="flex-1">
+                        <div id="m-region" class="inline-block bg-indigo-100 text-indigo-700 px-3 py-1 rounded-lg text-[10px] font-black uppercase mb-2">REGION</div>
+                        <h2 id="m-country" class="text-4xl font-800 text-slate-900 leading-none">Nazione</h2>
+                        <p id="m-capital" class="text-lg text-slate-400 font-bold mt-1">Capitale</p>
+                    </div>
+                    <button id="btn-state-details-trigger" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-3 hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
+                        <i class="fas fa-book-open"></i>
+                        Scopri lo Stato
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const database = [
+            { 
+                name: "Italia", cap: "Roma", reg: "Europa", lat: 41.87, lon: 12.56, iso: "IT",
+                pop: "59 Milioni", curr: "Euro (€)", 
+                desc: "L'Italia è il paese con il maggior numero di siti UNESCO al mondo. Famosa per la sua storia romana, il Rinascimento e la sua cucina iconica.",
+                fact: "È l'unico stato al mondo che circonda interamente due nazioni sovrane.",
+                img: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=800&auto=format&fit=crop",
+                img2: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=400&auto=format&fit=crop"
+            },
+            { 
+                name: "Francia", cap: "Parigi", reg: "Europa", lat: 46.22, lon: 2.21, iso: "FR",
+                pop: "67 Milioni", curr: "Euro (€)", 
+                desc: "La nazione più visitata al mondo, cuore pulsante della moda, dell'arte e della filosofia europea fin dal XVIII secolo.",
+                fact: "La Francia è il paese con più fusi orari al mondo grazie ai territori d'oltremare.",
+                img: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&auto=format&fit=crop",
+                img2: "https://images.unsplash.com/photo-1431274172761-fca41d93e114?w=400&auto=format&fit=crop"
+            },
+            { 
+                name: "Giappone", cap: "Tokyo", reg: "Asia", lat: 36.20, lon: 138.25, iso: "JP",
+                pop: "125 Milioni", curr: "Yen (¥)", 
+                desc: "Un arcipelago che fonde tradizioni millenarie, templi e cerimonie del tè con la tecnologia più avanzata del pianeta.",
+                fact: "Ci sono più animali domestici che bambini in Giappone.",
+                img: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&auto=format&fit=crop",
+                img2: "https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=400&auto=format&fit=crop"
+            },
+            { 
+                name: "Stati Uniti", cap: "Washington D.C.", reg: "Americhe", lat: 37.09, lon: -95.71, iso: "US",
+                pop: "331 Milioni", curr: "Dollaro ($)", 
+                desc: "Una repubblica federale vastissima, nota per la diversità dei suoi paesaggi, da Hollywood al Grand Canyon, e la sua influenza culturale globale.",
+                fact: "Non esiste una lingua ufficiale a livello federale.",
+                img: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&auto=format&fit=crop",
+                img2: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&auto=format&fit=crop"
+            },
+            { 
+                name: "Egitto", cap: "Il Cairo", reg: "Africa", lat: 26.82, lon: 30.80, iso: "EG",
+                pop: "109 Milioni", curr: "Sterlina Egiziana", 
+                desc: "Culla di una delle civiltà più antiche, caratterizzata dal deserto del Sahara, dalle Piramidi e dal fertile bacino del Nilo.",
+                fact: "Il Nilo attraversa il paese per quasi 1.500 km.",
+                img: "https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=800&auto=format&fit=crop",
+                img2: "https://images.unsplash.com/photo-1572252017414-27416be7a12e?w=400&auto=format&fit=crop"
+            }
+        ];
+
+        let mapInstance = null;
+        let score = 0;
+        let currentSelectedState = null;
+
+        function goHome() {
+            hideAll();
+            document.getElementById('home-view').classList.remove('hidden');
+            document.getElementById('quiz-ui').classList.add('hidden');
+        }
+
+        function showAtlante() {
+            hideAll();
+            document.getElementById('atlante-view').classList.remove('hidden');
+            renderGrid(database);
+        }
+
+        function hideAll() {
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('atlante-view').classList.add('hidden');
+            document.getElementById('quiz-view').classList.add('hidden');
+        }
+
+        function renderGrid(list) {
+            const grid = document.getElementById('states-grid');
+            grid.innerHTML = '';
+            list.sort((a,b) => a.name.localeCompare(b.name)).forEach(s => {
+                const thumb = `https://static-maps.yandex.ru/1.x/?ll=${s.lon},${s.lat}&z=3&l=map&size=350,180&lang=it_IT`;
+                const card = document.createElement('div');
+                card.className = "study-card p-4 cursor-pointer";
+                card.onclick = () => openMap(s);
+                card.innerHTML = `
+                    <img src="${thumb}" class="w-full h-32 object-cover rounded-xl mb-4 bg-slate-100">
+                    <h4 class="text-xl font-800 text-slate-800">${s.name}</h4>
+                    <p class="text-indigo-500 font-bold text-xs uppercase tracking-widest">${s.cap}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterList() {
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const filtered = database.filter(s => s.name.toLowerCase().includes(query) || s.cap.toLowerCase().includes(query));
+            renderGrid(filtered);
+        }
+
+        function openMap(state) {
+            currentSelectedState = state;
+            const modal = document.getElementById('detail-modal');
+            document.getElementById('m-country').innerText = state.name;
+            document.getElementById('m-capital').innerText = state.cap;
+            document.getElementById('m-region').innerText = state.reg;
+            document.getElementById('map-loader').style.display = 'flex';
+            
+            // Collega il trigger al nuovo pannello informativo
+            const trigger = document.getElementById('btn-state-details-trigger');
+            trigger.onclick = (e) => {
+                e.stopPropagation();
+                openStateInfo(state);
+            };
+            
+            modal.classList.add('active');
+
+            if (mapInstance) mapInstance.destroy();
+
+            ymaps.ready(() => {
+                mapInstance = new ymaps.Map("map-canvas", {
+                    center: [state.lat, state.lon],
+                    zoom: 4,
+                    controls: ['zoomControl']
+                });
+
+                ymaps.borders.load('001', { lang: 'it' }).then(geojson => {
+                    const feature = geojson.features.find(f => f.properties.iso3166 === state.iso);
+                    if (feature) {
+                        const polygon = new ymaps.Polygon(feature.geometry.coordinates, {}, {
+                            fillColor: '#6366f133', strokeColor: '#4f46e5', strokeWidth: 2
+                        });
+                        mapInstance.geoObjects.add(polygon);
+                        mapInstance.setBounds(polygon.geometry.getBounds(), { zoomMargin: 40 });
+                    }
+                    document.getElementById('map-loader').style.display = 'none';
+                });
+            });
+        }
+
+        function openStateInfo(state) {
+            console.log("Apertura info per:", state.name);
+            const panel = document.getElementById('state-info-panel');
+            
+            // Popolamento dati
+            document.getElementById('si-name').innerText = state.name;
+            document.getElementById('si-cap').innerText = "Capitale: " + state.cap;
+            document.getElementById('si-desc').innerText = state.desc;
+            document.getElementById('si-pop').innerText = state.pop;
+            document.getElementById('si-curr').innerText = state.curr;
+            document.getElementById('si-fact').innerText = state.fact;
+            document.getElementById('si-img').src = state.img;
+            document.getElementById('si-img-2').src = state.img2;
+            
+            // Visualizzazione
+            panel.classList.add('active');
+        }
+
+        function closeStateInfo() {
+            document.getElementById('state-info-panel').classList.remove('active');
+        }
+
+        function closeModal() {
+            document.getElementById('detail-modal').classList.remove('active');
+            if(mapInstance) mapInstance.destroy();
+        }
+
+        function openInfo() { document.getElementById('info-modal').classList.add('active'); }
+        function closeInfo() { document.getElementById('info-modal').classList.remove('active'); }
+
+        function startQuiz() {
+            hideAll();
+            score = 0;
+            document.getElementById('score-count').innerText = score;
+            document.getElementById('quiz-view').classList.remove('hidden');
+            document.getElementById('quiz-ui').classList.remove('hidden');
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            const target = database[Math.floor(Math.random() * database.length)];
+            document.getElementById('q-country').innerText = target.name;
+            let options = [target.cap];
+            while(options.length < 4) {
+                const randomCap = database[Math.floor(Math.random() * database.length)].cap;
+                if(!options.includes(randomCap)) options.push(randomCap);
+            }
+            options.sort(() => Math.random() - 0.5);
+            const container = document.getElementById('q-options');
+            container.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full p-6 bg-white border-2 border-slate-100 rounded-2xl font-bold text-lg hover:border-indigo-500 transition-all";
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if(opt === target.cap) {
+                        btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600');
+                        score++;
+                        document.getElementById('score-count').innerText = score;
+                    } else {
+                        btn.classList.add('bg-red-500', 'text-white', 'border-red-600');
+                    }
+                    setTimeout(nextQuestion, 800);
+                };
+                container.appendChild(btn);
+            });
+        }
+    </script>
+</body>
+</html>
