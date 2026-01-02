@@ -124,7 +124,7 @@
             background: #f59e0b;
         }
 
-        /* Nuovi stili per Score e Record a lato */
+        /* Score e Record a lato */
         .quiz-stats-container {
             position: absolute;
             top: 50%;
@@ -144,8 +144,14 @@
             padding: 20px;
             border-radius: 20px;
             text-align: center;
-            min-width: 120px;
+            min-width: 140px;
             backdrop-filter: blur(10px);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .stat-box.pulse {
+            transform: scale(1.1);
+            border-color: #fbbf24;
         }
 
         @media (max-width: 1024px) {
@@ -236,7 +242,7 @@
                     <div class="card-modern p-10 max-w-sm w-full">
                         <i class="fas fa-trophy text-5xl text-amber-500 mb-6 block"></i>
                         <h2 class="text-2xl font-800 mb-2 text-white">Geo Challenge</h2>
-                        <p class="text-slate-400 text-sm mb-8">Quante capitali riesci a indovinare? Sistema survival con audio attivo.</p>
+                        <p class="text-slate-400 text-sm mb-8">Ogni errore costa caro: <span class="text-red-400 font-bold">-40 punti</span>. Sistema survival attivo.</p>
                         <div id="best-score-display" class="mb-8 text-amber-500 font-bold bg-amber-500/10 py-3 rounded-xl border border-amber-500/20">Record: 0</div>
                         <button onclick="startQuiz()" class="btn-primary w-full py-4 rounded-2xl font-800 uppercase tracking-widest text-white">Inizia ora</button>
                     </div>
@@ -247,7 +253,7 @@
                     <div class="quiz-stats-container">
                         
                         <!-- SCORE SINISTRA -->
-                        <div class="stat-box order-1 md:order-none">
+                        <div id="box-score" class="stat-box order-1 md:order-none">
                             <span class="text-[10px] uppercase font-800 text-indigo-400 tracking-widest block mb-1">Score</span>
                             <span id="q-score" class="text-4xl font-900 text-white">0</span>
                         </div>
@@ -272,7 +278,7 @@
                         </div>
 
                         <!-- RECORD DESTRA -->
-                        <div class="stat-box order-2 md:order-none border-amber-500/30 bg-amber-500/5">
+                        <div id="box-best" class="stat-box order-2 md:order-none border-amber-500/30 bg-amber-500/5">
                             <span class="text-[10px] uppercase font-800 text-amber-500 tracking-widest block mb-1">Record</span>
                             <span id="q-best" class="text-4xl font-900 text-amber-500">0</span>
                         </div>
@@ -284,7 +290,7 @@
         </div>
     </div>
 
-    <!-- Modal Mappa (Invariato) -->
+    <!-- Modal Mappa -->
     <div id="map-modal" class="fixed inset-0 z-[2000] hidden bg-slate-950/98 backdrop-blur-2xl flex flex-col">
         <div class="flex items-center justify-between p-5 border-b border-white/10">
             <div class="flex items-center gap-4">
@@ -403,8 +409,6 @@
             `).join('');
         }
 
-        function filterItalia(v) { renderItalia(v); }
-
         function renderWorld(f = "") {
             const grid = document.getElementById('world-grid');
             const filtered = countries.filter(c => c.name.toLowerCase().includes(f.toLowerCase()));
@@ -416,8 +420,6 @@
                 </div>
             `).join('');
         }
-
-        function filterWorld(v) { renderWorld(v); }
 
         function initLeaflet() {
             if (!map) {
@@ -545,8 +547,14 @@
                 btn.classList.replace('border-white/10', 'border-emerald-500');
                 btn.classList.add('bg-emerald-500/20', 'text-emerald-400');
                 score += 10;
-                msg.innerText = "CORRETTO!";
+                msg.innerText = "+10 PUNTI!";
                 msg.className = "mt-6 font-bold italic text-emerald-400";
+                
+                // Effetto pulse su record se battuto
+                if (score > bestScore) {
+                    document.getElementById('box-best').classList.add('pulse');
+                    setTimeout(() => document.getElementById('box-best').classList.remove('pulse'), 500);
+                }
             } else {
                 playSound('wrong');
                 btn.classList.replace('border-white/10', 'border-red-500');
@@ -557,8 +565,9 @@
                         b.classList.add('bg-emerald-500/20', 'text-emerald-400');
                     }
                 });
-                score = Math.max(0, score - 5);
-                msg.innerText = "SBAGLIATO!";
+                // PENALITA' DI 40 PUNTI
+                score = Math.max(0, score - 40);
+                msg.innerText = "-40 PUNTI!";
                 msg.className = "mt-6 font-bold italic text-red-400";
             }
 
@@ -582,6 +591,9 @@
         }
 
         function startClock() { setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT'); }, 1000); }
+        function filterItalia(v) { renderItalia(v); }
+        function filterWorld(v) { renderWorld(v); }
+
         window.onload = init;
     </script>
 </body>
